@@ -34,5 +34,7 @@ for num_speaker_val in num_speakers:
                         "snrHigh": noise_snr_val,
                     }
                 ]
+            else: 
+                noise_snr_val= "N"
             with open(f"./pipelines/mix_pipelines/{num_speaker_val}_{snr_val}_{noise_snr_val}.json", "w") as f:
                 json.dump(template, f,indent=6)
