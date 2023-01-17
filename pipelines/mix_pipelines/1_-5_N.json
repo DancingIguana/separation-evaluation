@@ -1,5 +1,5 @@
 {
-      "path": "./data/1_-5_0",
+      "path": "./data/1_-5_None",
       "dataRoot": "./data/MiniLibriSpeech",
       "originalDatasetCsv": "./data/MiniLibriSpeech/LibriSpeech/test.csv",
       "originalDataSamplerate": 16000,
@@ -7,12 +7,5 @@
       "numSpeakers": 1,
       "mixSNR": -5,
       "sourceAugmentationPipeline": [],
-      "mixAugmentationPipeline": [
-            {
-                  "method": "addNoise",
-                  "csvFile": null,
-                  "snrLow": -5,
-                  "snrHigh": -5
-            }
-      ]
+      "mixAugmentationPipeline": []
 }

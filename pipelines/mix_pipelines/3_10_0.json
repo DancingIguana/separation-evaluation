@@ -1,5 +1,5 @@
 {
-      "path": "./data/3_10_None",
+      "path": "./data/3_10_0",
       "dataRoot": "./data/MiniLibriSpeech",
       "originalDatasetCsv": "./data/MiniLibriSpeech/LibriSpeech/test.csv",
       "originalDataSamplerate": 16000,
@@ -11,8 +11,8 @@
             {
                   "method": "addNoise",
                   "csvFile": null,
-                  "snrLow": 15,
-                  "snrHigh": 15
+                  "snrLow": 0,
+                  "snrHigh": 0
             }
       ]
 }

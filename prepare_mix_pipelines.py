@@ -25,7 +25,7 @@ for num_speaker_val in num_speakers:
             template["numSpeakers"] = num_speaker_val
             template["mixSNR"] = snr_val
             template["sourceAugmentationPipeline"] = []
-            if noise_snr_val:
+            if noise_snr_val != None:
                 template["mixAugmentationPipeline"] = [
                     {
                         "method": "addNoise",
