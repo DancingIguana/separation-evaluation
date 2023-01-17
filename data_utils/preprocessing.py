@@ -449,12 +449,9 @@ def generate_speech_mix_dataset(
 
     #TODO: consider case when num_speakers = 1 to consider only augmented signals
     # and no mixtures as such
-    if num_speakers == 1:
-
-        return
+    #if num_speakers == 1: return
 
     speaker_count = num_speakers - 1
-    performed_mix = False
 
     # Get the dataset files' general information
     df = pd.read_csv(original_dataset_csv)
@@ -510,13 +507,15 @@ def generate_speech_mix_dataset(
     
     # Generate all of the mixed signals
     mixed_signals = []
-    
-    print("Mixing signals...")
-    mixed_signals = generate_mixed_signals(
-        batches = augmented_sources,
-        speaker_count = speaker_count,
-        snr_high = snr_high,
-        snr_low = snr_low)
+    if speaker_count > 0:
+        print("Mixing signals...")
+        mixed_signals = generate_mixed_signals(
+            batches = augmented_sources,
+            speaker_count = speaker_count,
+            snr_high = snr_high,
+            snr_low = snr_low)
+    else:
+        mixed_signals = augmented_sources.copy()
     
 
     # Add specified transformations to all of the mixed signals
