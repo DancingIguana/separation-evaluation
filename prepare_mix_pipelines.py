@@ -21,7 +21,7 @@ template = {
 
 if not os.path.exists("./mix_pipelines"):
     os.mkdir("mix_pipelines")
-    
+
 for num_speaker_val in num_speakers:
     for snr_val in snr:
         for noise_snr_val in noise_snr:
@@ -29,6 +29,10 @@ for num_speaker_val in num_speakers:
             template["numSpeakers"] = num_speaker_val
             template["mixSNR"] = snr_val
             template["sourceAugmentationPipeline"] = []
+            if num_speaker_val == 1:
+                template["newSamplerate"] = 16000
+            else:
+                template["newSamplerate"] = 8000
             if noise_snr_val != None:
                 template["mixAugmentationPipeline"] = [
                     {
