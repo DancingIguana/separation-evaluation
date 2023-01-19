@@ -4,7 +4,7 @@ import os
 original_data_samplerate = 16000
 new_sample_rate = 8000
 num_speakers = [1,2,3]
-snr = [-5,0,5,10,15]
+mix_snr = [-5,0,5,10,15]
 noise_snr = [None,-5,0,5,10,15]
 
 template = {
@@ -23,16 +23,30 @@ if not os.path.exists("./mix_pipelines"):
     os.mkdir("mix_pipelines")
 
 for num_speaker_val in num_speakers:
-    for snr_val in snr:
-        for noise_snr_val in noise_snr:
-            template["path"] = f"./data/{num_speaker_val}_{snr_val}_{noise_snr_val}"
+    for noise_snr_val in noise_snr:
+
+        # When there's 1 speaker, we only need
+        # to have variation in noise_snr_val, not mix
+        if num_speaker_val == 1: 
+            if not os.path.exists("./mix_pipelines/1"): os.mkdir("./mix_pipelines/1")
+            #We aren't interested in clean sources:
+            if noise_snr_val == None: continue
+            template["newSamplerate"] = 16000
+            with open(f"./mix_pipelines/1/{noise_snr_val}_N.json", "w") as f:
+                json.dump(template,f,indent=6)
+            continue
+        
+        # For 2 and 3 speakers
+        for mix_snr_val in mix_snr:
+            if not os.path.exists(f"./mix_pipelines/{num_speaker_val}"):
+                os.mkdir(f"./mix_pipelines/{num_speaker_val}")
+            template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}"
             template["numSpeakers"] = num_speaker_val
-            template["mixSNR"] = snr_val
+            template["mixSNR"] = mix_snr_val
             template["sourceAugmentationPipeline"] = []
-            if num_speaker_val == 1:
-                template["newSamplerate"] = 16000
-            else:
-                template["newSamplerate"] = 8000
+            template["newSamplerate"] = 8000
+
+            
             if noise_snr_val != None:
                 template["mixAugmentationPipeline"] = [
                     {
@@ -42,9 +56,10 @@ for num_speaker_val in num_speakers:
                         "snrHigh": noise_snr_val,
                     }
                 ]
+
             else:
                 template["mixAugmentationPipeline"] = [] 
                 noise_snr_val= "N"
             
-            with open(f"./mix_pipelines/{num_speaker_val}_{snr_val}_{noise_snr_val}.json", "w") as f:
+            with open(f"./mix_pipelines/{num_speaker_val}/{noise_snr_val}_{mix_snr_val}.json", "w") as f:
                 json.dump(template, f,indent=6)
