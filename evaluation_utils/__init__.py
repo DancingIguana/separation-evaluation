@@ -1,2 +1,2 @@
 import sys
-sys.path.append("..") # Adds higher directory to python modules path.
+sys.path.append("../separation-evaluation/speechbrain") # Adds higher directory to python modules path.

@@ -1,0 +1,12 @@
+{
+    "prepareMLS": true,
+     "MLS": { 
+            "directory": "./data/MiniLibriSpeech",
+            "json_train": "train.json",
+            "json_test": "test.json",
+            "json_valid": "valid.json",
+            "csv_train": "train.csv",
+            "csv_valid": "valid.csv",
+            "csv_test": "test.csv"
+    }   
+}

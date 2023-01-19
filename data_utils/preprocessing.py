@@ -504,7 +504,7 @@ def generate_speech_mix_dataset(
             augmented_sources.append(augmented_source)
         padded_tensors = augmented_sources
 
-    
+
     # Generate all of the mixed signals
     mixed_signals = []
     if speaker_count > 0:

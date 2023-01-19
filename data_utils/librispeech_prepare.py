@@ -72,11 +72,9 @@ def prepare_mini_librispeech(
     wav_list_train = get_all_files(train_folder, match_and=extension)
     wav_list_valid = get_all_files(valid_folder, match_and=extension)
     wav_list_test = get_all_files(test_folder, match_and=extension)
-    print("Saving json")
     create_json(wav_list_train, save_json_train)
     create_json(wav_list_valid, save_json_valid)
     create_json(wav_list_test, save_json_test)
-    print("Saving csv")
     create_csv(wav_list_train,save_csv_train)
     create_csv(wav_list_valid,save_csv_valid)
     create_csv(wav_list_test,save_csv_test)
@@ -155,7 +153,6 @@ def create_csv(wav_list,csv_file):
         #"spk_id_format":spk_id_formats,
         #"spk_id_opts":spk_id_opts
         })
-    print(df)
     df.to_csv(csv_file,index=False)
 
 
