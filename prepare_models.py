@@ -1,9 +1,9 @@
+import sys
+sys.path.append("./speechbrain")
+
 from speechbrain.pretrained import SepformerSeparation as separator
 from speechbrain.pretrained import WaveformEnhancement
 from speechbrain.pretrained import SpectralMaskEnhancement
-
-# Saving enhanced signal on disk
-torchaudio.save('enhanced.wav', enhanced.unsqueeze(0).cpu(), 16000)
 
 # Enhancement = 1-speaker
 #16K
@@ -30,3 +30,11 @@ model = separator.from_hparams(
 model = separator.from_hparams(
     source="speechbrain/sepformer-wsj02mix", 
     savedir='pretrained_models/sepformer-wsj02mix')
+
+
+# 3-speaker
+#8K
+model = separator.from_hparams(
+    source="speechbrain/sepformer-wsj03mix", 
+    savedir='pretrained_models/sepformer-wsj03mix')
+
