@@ -1,4 +1,5 @@
 import json
+import os
 
 original_data_samplerate = 16000
 new_sample_rate = 8000
@@ -18,6 +19,9 @@ template = {
     "mixAugmentationPipeline": [],
 }
 
+if not os.path.exists("./mix_pipelines"):
+    os.mkdir("mix_pipelines")
+    
 for num_speaker_val in num_speakers:
     for snr_val in snr:
         for noise_snr_val in noise_snr:
@@ -38,5 +42,5 @@ for num_speaker_val in num_speakers:
                 template["mixAugmentationPipeline"] = [] 
                 noise_snr_val= "N"
             
-            with open(f"./pipelines/mix_pipelines/{num_speaker_val}_{snr_val}_{noise_snr_val}.json", "w") as f:
+            with open(f"./mix_pipelines/{num_speaker_val}_{snr_val}_{noise_snr_val}.json", "w") as f:
                 json.dump(template, f,indent=6)
