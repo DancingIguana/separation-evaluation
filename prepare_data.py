@@ -4,7 +4,7 @@ import os
 
 
 # Get hyperparams
-with open("data_hparams.json", "r") as f:
+with open("./hparams/minilibrispeech_hparams.json", "r") as f:
     data_hparams = json.load(f)
 
 

@@ -1,9 +1,10 @@
 import pandas as pd
+import json
 from speechbrain.dataio.dataio import read_audio
 import mir_eval
 
 def evaluate_model(
-    dataset_df: pd.DataFrame,
+    dataset_hparams_json: str,
     num_speakers: int, 
     model_separation_function, 
     samplerate: int = 16000
@@ -43,6 +44,11 @@ def evaluate_model(
     - SAR: separation quality variable
     - SDR: separation quality variable
     """
+
+    with open(dataset_hparams_json,"r") as f:
+        data_hparams = json.load(dataset_hparams_json)
+
+    dataset_df = pd.read_csv(dataset_hparms_json)
     mix_wav = []
     original_source = []
     mix_duration = []

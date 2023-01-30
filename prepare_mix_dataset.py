@@ -5,7 +5,6 @@ import pandas as pd
 
 from data_utils.preprocessing import generate_speech_mix_dataset
 
-print(sys.argv)
 if len(sys.argv) != 2 or not os.path.exists(sys.argv[-1]):
     print("Specify after the command line the path to the new dataset hyperparameters.")
     exit()

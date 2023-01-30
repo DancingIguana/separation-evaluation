@@ -541,6 +541,7 @@ def generate_speech_mix_dataset(
         samplerate = new_samplerate)
 
     dataset_info = {
+        "csv": os.path.join(folder_name,"dataset_info.csv"),
         "numSpeakers": num_speakers,
         "samplerate": new_samplerate,
         "sourceAugmentationPipeline": source_augmentation_pipeline,
