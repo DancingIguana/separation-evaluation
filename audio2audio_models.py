@@ -5,7 +5,11 @@ from speechbrain.pretrained import SpectralMaskEnhancement
 
 
 class Audio2AudioModels:
-    def __init__(self):
+    def __init__(self, model_type:str, model_name: str):
+        assert(model_type in ["enhancers","2speakers","3speakers"], f"Model type {model_type} doesn't exist")
+        
+        self.model_type = model_type
+        self.model_name = model_name
         self.models = {
             "enhancers": {
                 "mtl_mimic": WaveformEnhancement.from_hparams( 
@@ -30,6 +34,8 @@ class Audio2AudioModels:
             }
         }
 
+        self.model = self.models[model_type][model_name]
+
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
         lengths = torch.tensor([1.])
         st = time.time()
@@ -48,6 +54,23 @@ class Audio2AudioModels:
         # Transform shape of estimate_sources
         estimate_sources = torch.transpose(estimate_sources,1,2)[0]
         return estimate_sources, elapsed_time, memory
+
+
+    def audio_model_function(self,noisy_batch: torch.tensor):
+        model_function = None
+        
+        if self.model_name == "enhancers":
+            model_function = self.models[self.model_type][self.model_name].enhance_batch
+            return self.enhancer_template(
+                noisy_batch=noisy_batch,
+                enhancement_function=model_function
+            )
+        
+        model_function = self.models[self.model_type][self.model_name].separate_batch
+        return self.separator_template(
+            mix_batch=noisy_batch,
+            separator_function=model_function
+        )
 
     def enhancer_mtl_mimic(self,noisy_batch:torch.tensor):
         enhancement_function = self.models["enhancers"]["mtl_mimic"].enhance_batch
