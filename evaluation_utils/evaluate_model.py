@@ -4,6 +4,7 @@ from speechbrain.dataio.dataio import read_audio
 import mir_eval
 import torch
 import numpy as np
+import itertools
 
 def evaluate_model(
     dataset_hparams_json: str,
@@ -81,45 +82,59 @@ def evaluate_model(
         #TODO: Evaluate the separation for a model that's separating a mix with more files
         # than it's intended ones
         n_estimations = len(estimate_sources)
+        # For each estimation, try to pair it to all the possible combinations
+        # of sources, the one that gets the greatest average SIR, will be considered as
+        # the original one
         if len(sources_stacked_tensor) > n_estimations:
-            # Simply add "dummy" estimations and we care only of the original estimations
-            remaining_sources = len(sources) - n_estimations
-            estimate_sources = torch.cat(
-                (
-                    estimate_sources,
-                    torch.zeros((remaining_sources,estimate_sources.shape[1]))
-                )
-            )
-
-            # The top estimations are the ones we store
-            # Evaluate the separation with mir_eval
-            sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
-                reference_sources=sources_stacked_tensor.numpy(),
-                estimated_sources=estimate_sources.numpy(),
-                )
-            # One tuple represents one estimation's score
-            results = [(j,sdr_[j],sir_[j],sar_[j]) for j in range(len(estimate_sources))]
-            #Sort the values from greatest to lowest SIR
-            results = sorted(results, key = lambda x : x[2], reverse=True)
+            # All the possible combinations
+            max_average_sir = -1e9
+            max_average_sdr = -1e9
+            closest_to_estimate_sources = None
             
-            # Now store only the best results:
+            indexed_sources = [(i,source) for i,source in enumerate(sources)]
+            for subset in itertools.combinations(indexed_sources,n_estimations):
+                #Get the sources values as a numpy array
+                subset_indexed_sources = sorted(subset, key = lambda x:x[0])
+                print(f"Subset indexes sources: {subset_indexed_sources}")
+                sources_array = np.array([source[1].numpy() for source in sorted(subset_indexed_sources)])
+                print(f"Sources array: {sources_array}")
+                sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
+                    reference_sources=sources_array,
+                    estimated_sources=estimate_sources.numpy(),
+                )
+
+                # The one with the best average SIR (or SDR if only one estimation)
+                # is the one we'll consider
+                avg_sir = np.mean(sir_)
+                avg_sdr = np.mean(sdr_)
+                print(f"SIR: {sir_}")
+                print(f"SDR: {sdr_}")
+                if (n_estimations > 1 and avg_sir > max_average_sir) or (n_estimations == 1 and avg_sdr > max_average_sdr): 
+                    closest_to_estimate_sources = subset_indexed_sources
+                    sdr_array = sdr_
+                    sir_array = sir_
+                    sar_array = sar_
+                    max_average_sir = avg_sir
+                    max_average_sdr = avg_sdr
+                    print("Max average",max_average_sdr)
+
+            print(f"Chosen:\n\t SIR:{sir_array}, \n\tSDR:{sdr_array} \n\tIndex: {[j[0] for j in subset_indexed_sources]}")
             for j in range(n_estimations):
-                j_val, sdr_val, sir_val, sar_val = results[j]
+                
+                j_val = subset_indexed_sources[j][0]
                 mix_wav.append(mix_file)
                 mix_duration.append(mix_duration_)
-                original_source.append(source_files[j])
-
+                original_source.append(source_files[j_val])
                 if source_files[j_val].split("_")[-1] == mix_file.split("_")[-1]: 
                     main_source.append(True)
                 else:
                     main_source.append(False)
                 memory.append(memory_)
                 time.append(time_)
-                sir.append(sir_val)
-                sar.append(sar_val)
-                sdr.append(sdr_val)
+                sir.append(sir_array[j])
+                sar.append(sar_array[j])
+                sdr.append(sdr_array[j])
             continue
-
         # Evaluate the separation with mir_eval
         sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
             reference_sources=sources_stacked_tensor.numpy(),
