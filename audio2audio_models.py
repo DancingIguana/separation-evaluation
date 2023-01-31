@@ -2,7 +2,7 @@ import time
 from speechbrain.pretrained import SepformerSeparation as separator
 from speechbrain.pretrained import WaveformEnhancement
 from speechbrain.pretrained import SpectralMaskEnhancement
-
+import torch
 
 class Audio2AudioModels:
     def __init__(self, model_type:str, model_name: str):
@@ -39,7 +39,9 @@ class Audio2AudioModels:
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
         lengths = torch.tensor([1.])
         st = time.time()
+        print("Noisy batch size",noisy_batch.shape)
         estimate_source = enhancement_function(noisy_batch, lengths)
+        print("Clean batch size",estimate_source.shape)
         et = time.time()
         elapsed_time = et - st
         memory = None
@@ -59,7 +61,7 @@ class Audio2AudioModels:
     def audio_model_function(self,noisy_batch: torch.tensor):
         model_function = None
         
-        if self.model_name == "enhancers":
+        if self.model_type == "enhancers":
             model_function = self.models[self.model_type][self.model_name].enhance_batch
             return self.enhancer_template(
                 noisy_batch=noisy_batch,

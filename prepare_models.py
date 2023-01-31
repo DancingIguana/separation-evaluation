@@ -18,7 +18,6 @@ enhance_model = SpectralMaskEnhancement.from_hparams(
     savedir="pretrained_models/metricgan-plus-voicebank",
 )
 
-
 # 2-speaker
 #8K
 #https://huggingface.co/speechbrain/resepformer-wsj02mix

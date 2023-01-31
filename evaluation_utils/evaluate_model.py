@@ -2,12 +2,11 @@ import pandas as pd
 import json
 from speechbrain.dataio.dataio import read_audio
 import mir_eval
+import torch
 
 def evaluate_model(
     dataset_hparams_json: str,
-    num_speakers: int, 
     model_separation_function, 
-    samplerate: int = 16000
     ) -> tuple:
     """
     Given a dataframe indicating the mix column and its corresponding sources,
@@ -44,11 +43,12 @@ def evaluate_model(
     - SAR: separation quality variable
     - SDR: separation quality variable
     """
-
     with open(dataset_hparams_json,"r") as f:
-        data_hparams = json.load(dataset_hparams_json)
+        data_hparams = json.load(f)
 
-    dataset_df = pd.read_csv(dataset_hparms_json)
+    num_speakers = data_hparams["numSpeakers"]
+    samplerate = data_hparams["samplerate"]
+    dataset_df = pd.read_csv(data_hparams["csv"])
     mix_wav = []
     original_source = []
     mix_duration = []
@@ -57,7 +57,6 @@ def evaluate_model(
     sir = []
     sar = []
     memory = []
-
     for index, row in dataset_df.iterrows():
 
         # Get the mix file and the corresponding sources
@@ -71,9 +70,11 @@ def evaluate_model(
 
         # Stack the sources in a tensor 
         sources_stacked_tensor = torch.stack(sources)
-
+        print("Sources shape",sources_stacked_tensor.shape)
+        print("Mix shape",mix.shape)
         # Do the separation using the function and get the overall performance
         estimate_sources, time_, memory_ = model_separation_function(mix.unsqueeze(0))
+        print("Estimate shape", estimate_sources.shape)
 
         # Evaluate the separation with mir_eval
         sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
@@ -81,6 +82,8 @@ def evaluate_model(
             estimated_sources=estimate_sources.numpy(),
             )
         
+        #TODO: Evaluate the separation for a model that's separating a mix with more files
+        # than it's intended ones
         # "estimated source number perm[j] corresponds to true source number j"
         # Store the results
         for j in range(len(perm)):
