@@ -39,9 +39,9 @@ class Audio2AudioModels:
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
         lengths = torch.tensor([1.])
         st = time.time()
-        print("Noisy batch size",noisy_batch.shape)
+        #print("Noisy batch size",noisy_batch.shape)
         estimate_source = enhancement_function(noisy_batch, lengths)
-        print("Clean batch size",estimate_source.shape)
+        #print("Clean batch size",estimate_source.shape)
         et = time.time()
         elapsed_time = et - st
         memory = None

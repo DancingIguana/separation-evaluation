@@ -73,11 +73,11 @@ def evaluate_model(
 
         # Stack the sources in a tensor 
         sources_stacked_tensor = torch.stack(sources)
-        print("Sources shape",sources_stacked_tensor.shape)
-        print("Mix shape",mix.shape)
+        #print("Sources shape",sources_stacked_tensor.shape)
+        #print("Mix shape",mix.shape)
         # Do the separation using the function and get the overall performance
         estimate_sources, time_, memory_ = model_separation_function(mix.unsqueeze(0))
-        print("Estimate shape", estimate_sources.shape)
+        #print("Estimate shape", estimate_sources.shape)
 
         #TODO: Evaluate the separation for a model that's separating a mix with more files
         # than it's intended ones
@@ -107,8 +107,8 @@ def evaluate_model(
                 # is the one we'll consider
                 avg_sir = np.mean(sir_)
                 avg_sdr = np.mean(sdr_)
-                print(f"SIR: {sir_}")
-                print(f"SDR: {sdr_}")
+                #print(f"SIR: {sir_}")
+                #print(f"SDR: {sdr_}")
                 if (n_estimations > 1 and avg_sir > max_average_sir) or (n_estimations == 1 and avg_sdr > max_average_sdr): 
                     closest_to_estimate_sources = subset_indexed_sources
                     sdr_array = sdr_
@@ -116,9 +116,9 @@ def evaluate_model(
                     sar_array = sar_
                     max_average_sir = avg_sir
                     max_average_sdr = avg_sdr
-                    print("Max average",max_average_sdr)
+                    #print("Max average",max_average_sdr)
 
-            print(f"Chosen:\n\t SIR:{sir_array}, \n\tSDR:{sdr_array} \n\tIndex: {[j[0] for j in subset_indexed_sources]}")
+            #print(f"Chosen:\n\t SIR:{sir_array}, \n\tSDR:{sdr_array} \n\tIndex: {[j[0] for j in subset_indexed_sources]}")
             for j in range(n_estimations):
                 
                 j_val = subset_indexed_sources[j][0]
