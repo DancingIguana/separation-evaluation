@@ -3,6 +3,8 @@ from speechbrain.pretrained import SepformerSeparation as separator
 from speechbrain.pretrained import WaveformEnhancement
 from speechbrain.pretrained import SpectralMaskEnhancement
 import torch
+import psutil
+import os
 
 class Audio2AudioModels:
     def __init__(self, model_type:str, model_name: str):
@@ -38,21 +40,23 @@ class Audio2AudioModels:
 
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
         lengths = torch.tensor([1.])
+        this_process = psutil.Process(os.getpid())
         st = time.time()
         #print("Noisy batch size",noisy_batch.shape)
         estimate_source = enhancement_function(noisy_batch, lengths)
         #print("Clean batch size",estimate_source.shape)
         et = time.time()
         elapsed_time = et - st
-        memory = None
+        memory = this_process.memory_info().rss
         return estimate_source, elapsed_time, memory
     
     def separator_template(self,mix_batch: torch.tensor, separator_function):
+        this_process = psutil.Process(os.getpid())
         st = time.time()
         estimate_sources = separator_function(mix=mix_batch)
         et = time.time()
         elapsed_time = et - st
-        memory = None
+        memory = this_process.memory_info().rss
         # Transform shape of estimate_sources
         estimate_sources = torch.transpose(estimate_sources,1,2)[0]
         return estimate_sources, elapsed_time, memory
