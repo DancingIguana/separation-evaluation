@@ -160,18 +160,33 @@ def evaluate_model(
             sdr.append(sdr_[j])
             # TODO: Add option to save the estimated sources
             # estimated source = estimate_sources[perm[j]]
-        
+    
+
+    white_noise_snr_low = None
+    white_noise_snr_high = None
+    for operation in data_hparams["mixAugmentationPipeline"]:
+        if operation["method"] == "addNoise":
+            added_noise = True
+            white_noise_snr_low = operation["snrLow"]
+            white_noise_snr_high = operation["snrHigh"]
     df_results = pd.DataFrame(
         {
             "mix_file": mix_wav,
             "mix_duration": mix_duration,
+            "mix_samplerate": [data_hparams["samplerate"] for i in range(len(mix_wav))],
+            "num_speakers_in_mix": [data_hparams["numSpeakers"] for i in range(len(mix_wav))],
+            "mix_snr_low": [data_hparams["mixSNRLow"] if data_hparams != 1 else None for i in range(len(mix_wav))],
+            "mix_snr_high": [data_hparams["mixSNRHigh"] if data_hparams != 1 else None for i in range(len(mix_wav))],
+            "white_noise_snr_low": [white_noise_snr_low for i in range(len(mix_wav))],
+            "white_noise_snr_high": [white_noise_snr_high for i in range(len(mix_wav))],
             "original_source": original_source,
             "main_source":main_source,
             "separation_time": time,
             "occupied_memory": memory,
             "SIR": sir,
             "SDR": sdr,
-            "SAR": sar
+            "SAR": sar,
+
         }
     )
 

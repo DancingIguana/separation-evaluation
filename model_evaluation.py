@@ -9,12 +9,18 @@ import pandas as pd
 
 def evaluate_model_with_dataset(
     dataset_hparams_json: str, 
-    model_separation_function,
+    model_name: str,
+    model_type: str,
     results_path: str):
+
+    audio_model = Audio2AudioModels(model_type=model_type,model_name=model_name)
+
     results_df = evaluate_model(
             dataset_hparams_json = dataset_hparams_json,
-            model_separation_function=model_separation_function)
+            model_separation_function=audio_model.audio_model_function)
     
+    results_df["model_type"] = [model_type for i in range(len(results_df))]
+    results_df["model_name"] = [model_name for i in range(len(results_df))]
     results_df.to_csv(results_path)
 
 
@@ -29,10 +35,9 @@ if __name__ == "__main__":
     model_type = sys.argv[-2]
     model_name = sys.argv[-1]
 
-    audio_model = Audio2AudioModels(model_type=model_type,model_name=model_name)
-
     evaluate_model_with_dataset(
         dataset_hparams_json=dataset_hparams_json,
-        model_separation_function=audio_model.audio_model_function,
+        model_type=model_type,
+        model_name=model_name,
         results_path=results_path
     )

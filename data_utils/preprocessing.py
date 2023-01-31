@@ -546,6 +546,8 @@ def generate_speech_mix_dataset(
         "samplerate": new_samplerate,
         "sourceAugmentationPipeline": source_augmentation_pipeline,
         "mixAugmentationPipeline": mix_augmentation_pipeline,
+        "mixSNRLow": None if num_speakers == 1 else snr_low,
+        "mixSNRHigh": None if num_speakers == 1 else snr_high
         #"mixSources": mix_sources
     }
 
