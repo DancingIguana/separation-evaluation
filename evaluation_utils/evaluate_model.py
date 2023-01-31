@@ -95,9 +95,9 @@ def evaluate_model(
             for subset in itertools.combinations(indexed_sources,n_estimations):
                 #Get the sources values as a numpy array
                 subset_indexed_sources = sorted(subset, key = lambda x:x[0])
-                print(f"Subset indexes sources: {subset_indexed_sources}")
+                #print(f"Subset indexes sources: {subset_indexed_sources}")
                 sources_array = np.array([source[1].numpy() for source in sorted(subset_indexed_sources)])
-                print(f"Sources array: {sources_array}")
+                #print(f"Sources array: {sources_array}")
                 sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
                     reference_sources=sources_array,
                     estimated_sources=estimate_sources.numpy(),
