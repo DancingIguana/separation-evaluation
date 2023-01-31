@@ -3,6 +3,7 @@ import json
 from speechbrain.dataio.dataio import read_audio
 import mir_eval
 import torch
+import numpy as np
 
 def evaluate_model(
     dataset_hparams_json: str,
@@ -57,6 +58,7 @@ def evaluate_model(
     sir = []
     sar = []
     memory = []
+    main_source = []
     for index, row in dataset_df.iterrows():
 
         # Get the mix file and the corresponding sources
@@ -76,20 +78,66 @@ def evaluate_model(
         estimate_sources, time_, memory_ = model_separation_function(mix.unsqueeze(0))
         print("Estimate shape", estimate_sources.shape)
 
+        #TODO: Evaluate the separation for a model that's separating a mix with more files
+        # than it's intended ones
+        n_estimations = len(estimate_sources)
+        if len(sources_stacked_tensor) > n_estimations:
+            # Simply add "dummy" estimations and we care only of the original estimations
+            remaining_sources = len(sources) - n_estimations
+            estimate_sources = torch.cat(
+                (
+                    estimate_sources,
+                    torch.zeros((remaining_sources,estimate_sources.shape[1]))
+                )
+            )
+
+            # The top estimations are the ones we store
+            # Evaluate the separation with mir_eval
+            sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
+                reference_sources=sources_stacked_tensor.numpy(),
+                estimated_sources=estimate_sources.numpy(),
+                )
+            # One tuple represents one estimation's score
+            results = [(j,sdr_[j],sir_[j],sar_[j]) for j in range(len(estimate_sources))]
+            #Sort the values from greatest to lowest SIR
+            results = sorted(results, key = lambda x : x[2], reverse=True)
+            
+            # Now store only the best results:
+            for j in range(n_estimations):
+                j_val, sdr_val, sir_val, sar_val = results[j]
+                mix_wav.append(mix_file)
+                mix_duration.append(mix_duration_)
+                original_source.append(source_files[j])
+
+                if source_files[j_val].split("_")[-1] == mix_file.split("_")[-1]: 
+                    main_source.append(True)
+                else:
+                    main_source.append(False)
+                memory.append(memory_)
+                time.append(time_)
+                sir.append(sir_val)
+                sar.append(sar_val)
+                sdr.append(sdr_val)
+            continue
+
         # Evaluate the separation with mir_eval
         sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
             reference_sources=sources_stacked_tensor.numpy(),
             estimated_sources=estimate_sources.numpy(),
             )
         
-        #TODO: Evaluate the separation for a model that's separating a mix with more files
-        # than it's intended ones
         # "estimated source number perm[j] corresponds to true source number j"
         # Store the results
-        for j in range(len(perm)):
+
+        for j in range(n_estimations):
             mix_wav.append(mix_file)
             mix_duration.append(mix_duration_)
             original_source.append(source_files[j])
+
+            if source_files[j].split("_")[-1] == mix_file.split("_")[-1]: 
+                main_source.append(True)
+            else:
+                main_source.append(False)
             memory.append(memory_)
             time.append(time_)
             sir.append(sir_[j])
@@ -103,6 +151,7 @@ def evaluate_model(
             "mix_file": mix_wav,
             "mix_duration": mix_duration,
             "original_source": original_source,
+            "main_source":main_source,
             "separation_time": time,
             "occupied_memory": memory,
             "SIR": sir,
