@@ -31,7 +31,7 @@ for num_speaker_val in num_speakers:
             if not os.path.exists("./mix_pipelines/1"): os.mkdir("./mix_pipelines/1")
             #We aren't interested in clean sources:
             if noise_snr_val == None: continue
-            template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_N"
+            template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_N_16000"
             template["newSamplerate"] = 16000
             template["numSpeakers"] = num_speaker_val
             template["mixAugmentationPipeline"] = [
@@ -42,7 +42,7 @@ for num_speaker_val in num_speakers:
                     "snrHigh":noise_snr_val
                 }
             ]
-            with open(f"./mix_pipelines/1/{noise_snr_val}_N.json", "w") as f:
+            with open(f"./mix_pipelines/1/{noise_snr_val}_N_{template['newSamplerate']}.json", "w") as f:
                 json.dump(template,f,indent=6)
             continue
         
@@ -52,11 +52,12 @@ for num_speaker_val in num_speakers:
             if not os.path.exists(f"./mix_pipelines/{num_speaker_val}"):
                 os.mkdir(f"./mix_pipelines/{num_speaker_val}")
                 
-            template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}"
+           
             template["numSpeakers"] = num_speaker_val
             template["mixSNR"] = mix_snr_val
             template["sourceAugmentationPipeline"] = []
             for samplerate in [8000,16000]: # When using enhancers, the samplerate will be 16000
+                template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}_{template}"
                 template["newSamplerate"] = samplerate
 
 
