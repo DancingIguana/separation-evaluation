@@ -74,5 +74,5 @@ for num_speaker_val in num_speakers:
                     template["mixAugmentationPipeline"] = [] 
                     temp= "N"
                 
-                with open(f"./mix_pipelines/{num_speaker_val}/{temp}_{mix_snr_val}.json", "w") as f:
+                with open(f"./mix_pipelines/{num_speaker_val}/{temp}_{mix_snr_val}_{samplerate}.json", "w") as f:
                     json.dump(template, f,indent=6)
