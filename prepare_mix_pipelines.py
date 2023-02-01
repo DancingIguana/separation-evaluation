@@ -51,26 +51,28 @@ for num_speaker_val in num_speakers:
             temp = noise_snr_val
             if not os.path.exists(f"./mix_pipelines/{num_speaker_val}"):
                 os.mkdir(f"./mix_pipelines/{num_speaker_val}")
+                
             template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}"
             template["numSpeakers"] = num_speaker_val
             template["mixSNR"] = mix_snr_val
             template["sourceAugmentationPipeline"] = []
-            template["newSamplerate"] = 8000
+            for samplerate in [8000,16000]: # When using enhancers, the samplerate will be 16000
+                template["newSamplerate"] = samplerate
 
 
-            if noise_snr_val != None:
-                template["mixAugmentationPipeline"] = [
-                    {
-                        "method": "addNoise",
-                        "csvFile": None, # None = white noise
-                        "snrLow": noise_snr_val,
-                        "snrHigh": noise_snr_val,
-                    }
-                ]
+                if noise_snr_val != None:
+                    template["mixAugmentationPipeline"] = [
+                        {
+                            "method": "addNoise",
+                            "csvFile": None, # None = white noise
+                            "snrLow": noise_snr_val,
+                            "snrHigh": noise_snr_val,
+                        }
+                    ]
 
-            else:
-                template["mixAugmentationPipeline"] = [] 
-                temp= "N"
-            
-            with open(f"./mix_pipelines/{num_speaker_val}/{temp}_{mix_snr_val}.json", "w") as f:
-                json.dump(template, f,indent=6)
+                else:
+                    template["mixAugmentationPipeline"] = [] 
+                    temp= "N"
+                
+                with open(f"./mix_pipelines/{num_speaker_val}/{temp}_{mix_snr_val}.json", "w") as f:
+                    json.dump(template, f,indent=6)
