@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import random 
+import tqdm
 
 from speechbrain.dataio.dataio import read_audio
 from speechbrain.dataio.dataio import write_audio
@@ -157,7 +158,7 @@ def add_padding_to_batches(batches:list):
 
 def get_tensors_from_grouping(root: str,files_df:pd.DataFrame, groupings:list, padding:bool = True) -> torch.tensor:
     tensor_batches = []
-    for batch in groupings:
+    for batch in tqdm(groupings,total = len(groupings)):
         tensor_batch = []
         for details in batch:
             audio_file = files_df[files_df["ID"] == details["ID"]].iloc[0]["wav"]
@@ -172,7 +173,7 @@ def get_tensors_from_grouping(root: str,files_df:pd.DataFrame, groupings:list, p
     padded_tensor_batches = add_padding_to_batches(tensor_batches)
 
     # Stack the tensors for each batch
-    for i in range(len(padded_tensor_batches)):
+    for i in tqdm(range(len(padded_tensor_batches))):
         padded_tensor_batches[i] = torch.stack(padded_tensor_batches[i])
 
     return padded_tensor_batches
@@ -185,7 +186,7 @@ def generate_mixed_signals(batches, speaker_count, snr_high, snr_low):
         snr_high = snr_high,
         snr_low = snr_low)
     
-    for batch in batches:
+    for batch in tqdm(batches,total=len(batches)):
         lengths = torch.ones(speaker_count+1)
         noisy = babbler(batch,lengths)
         mixed_signals.append(noisy)
@@ -481,7 +482,7 @@ def generate_speech_mix_dataset(
                 "new_freq": new_samplerate
             }
         ]
-        for batch in padded_tensors:
+        for batch in tqdm(padded_tensors,total = len(padded_tensors)):
             resampled_batch = batch_augmentation_pipeline(
                 batch, 
                 resample_pipeline)
@@ -497,7 +498,7 @@ def generate_speech_mix_dataset(
 
     if source_augmentation_pipeline != []:
         augmented_sources = []
-        for batch in padded_tensors:
+        for batch in tqdm(padded_tensors,total = len(padded_tensors)):
             augmented_source = batch_augmentation_pipeline(
                 batch,
                 source_augmentation_pipeline)
@@ -522,7 +523,7 @@ def generate_speech_mix_dataset(
     if mix_augmentation_pipeline != []:
         print("Applying augmentation pipeline to mixes...")
         augmented_mixed_signals = []
-        for batch in mixed_signals:
+        for batch in tqdm(mixed_signals,total=len(mixed_signals)):
             augmented_mix = batch_augmentation_pipeline(
                 batch,
                 mix_augmentation_pipeline)
