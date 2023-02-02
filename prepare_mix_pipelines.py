@@ -57,7 +57,7 @@ for num_speaker_val in num_speakers:
             template["mixSNR"] = mix_snr_val
             template["sourceAugmentationPipeline"] = []
             for samplerate in [8000,16000]: # When using enhancers, the samplerate will be 16000
-                template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}_{template}"
+                template["path"] = f"./data/{num_speaker_val}_{noise_snr_val}_{mix_snr_val}_{samplerate}"
                 template["newSamplerate"] = samplerate
 
 
