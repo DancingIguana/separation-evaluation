@@ -7,6 +7,24 @@ import psutil
 import os
 
 class Audio2AudioModels:
+    """
+    Class to call an enhancer or separator function from pretrained 
+    Speechbrain's models given its type and model name.
+
+    When running any of the models, the output will consist of the following:
+    - estimate_source(s): the separated or cleaned signals obtained by the 
+        model.
+    - time: the time it took to run the model given the specific signal batch 
+        in seconds.
+    - memory: the amount of memory that was being used when running the model 
+        in bytes.
+    
+    Parameters:
+    ---------------------
+    - model_type: the type of the model (enhancers, 2speakers, 3speakers).
+    - model_name: the specific name of the model, check audio2audio_models.py
+        for seeing the available models.
+    """
     def __init__(self, model_type:str, model_name: str):
         assert(model_type in ["enhancers","2speakers","3speakers"], f"Model type {model_type} doesn't exist")
         
@@ -42,6 +60,9 @@ class Audio2AudioModels:
         self.model = self.models[model_type][model_name]
 
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
+        """
+        Function for most of the enhancers from Speechbrain.
+        """
         lengths = torch.tensor([1.])
         this_process = psutil.Process(os.getpid())
         st = time.time()
@@ -54,6 +75,9 @@ class Audio2AudioModels:
         return estimate_source, elapsed_time, memory
     
     def separator_template(self,mix_batch: torch.tensor, separator_function):
+        """
+        Function for the separators from Speechbrain.
+        """
         this_process = psutil.Process(os.getpid())
         st = time.time()
         estimate_sources = separator_function(mix=mix_batch)
@@ -66,6 +90,15 @@ class Audio2AudioModels:
 
 
     def audio_model_function(self,noisy_batch: torch.tensor):
+        """
+        Function to be called when using the class
+
+        Returns:
+        -------------------
+        - estimated_source(s) given by the Speechbrain model.
+        - time it took to run the Speechbrain model with the batch in seconds.
+        - the memory that was being used while running the function in bytes.
+        """
         model_function = None
         
         if self.model_type == "enhancers" and "sepformer" not in self.model_name:

@@ -1,3 +1,8 @@
+"""
+When running these all the pretrained models in this script
+will be automatically downloaded by Speechbrain
+"""
+
 import sys
 sys.path.append("./speechbrain")
 

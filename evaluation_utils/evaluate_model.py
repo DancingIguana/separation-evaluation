@@ -36,14 +36,30 @@ def evaluate_model(
     Returns:
     ----------------------
     Dataframe with the following columns:
-    - mix_file: path of the original mix
-    - mix_duration: duration in seconds of the original mix
-    - original_source: path of the original source that was separated
-    - separation_time: time it took to run the separation function
-    - occupied_memory: the memory that the process of separation took
-    - SIR: separation quality variable
-    - SAR: separation quality variable
-    - SDR: separation quality variable
+    - mix_file: path of the mix used when running the model
+    - mix_duration: duration of the mix in seconds
+    - mix_samplerate: the samplerate of the mix
+    - num_speakers_in_mix: the number of speakers present in the mix
+    - mix_snr_low: the SNR value in the lower interval for the non-main 
+        sources/speakers in the mix
+    - mix_snr_low: the SNR value in the higher interval for the non-main 
+        sources/speakers in the mix
+    - white_noise_snr_low: the SNR value in the lower interval for the
+        white noise present in the mix
+    - white_noise_snr_high: the SNR vallue in the higher interval for the
+        white noise present in the mix.
+    - original_source: the corresponding file of the original source given
+        the estimated source obtained from the model (depending on SIR/SDR).
+    - main_source: 'True' if the source in the mix is not an extra in the 
+        signal, meaning that the rest of the speakers vary according to the 
+        mix_snr_low and mix_snr_high variables. 'False' if otherwise.
+    - separation_time: the time it took for the Speechbrain model to run 
+        with the corresponding mix in seconds.
+    - occupied_memory: the amount of memory occupied while running the 
+        Speechbrain model in bytes.
+    - SIR: the estimated SIR as specified by mir_eval.
+    - SDR: the estimated SDR as specified by mir_eval.
+    - SAR: the estimated SAR as specified by mir_eval.
     """
     with open(dataset_hparams_json,"r") as f:
         data_hparams = json.load(f)
