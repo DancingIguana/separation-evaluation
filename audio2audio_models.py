@@ -19,18 +19,21 @@ class Audio2AudioModels:
                     savedir="pretrained_models/mtl-mimic-voicebank"),
                 "metricgan": SpectralMaskEnhancement.from_hparams(
                     source="speechbrain/metricgan-plus-voicebank",
-                    savedir="pretrained_models/metricgan-plus-voicebank")
+                    savedir="pretrained_models/metricgan-plus-voicebank"),
+                "sepformer-whamr16k": separator.from_hparams(
+                    source="speechbrain/sepformer-whamr16k", 
+                    savedir='pretrained_models/sepformer-whamr16k')
             },
             "2speakers": {
-                "resepformer": separator.from_hparams(
+                "resepformer-wsj02mix": separator.from_hparams(
                     source="speechbrain/resepformer-wsj02mix", 
                     savedir='pretrained_models/resepformer-wsj02mix'),
-                "sepformer": separator.from_hparams(
+                "sepformer-wsj02mix": separator.from_hparams(
                     source="speechbrain/sepformer-wsj02mix", 
                     savedir='pretrained_models/sepformer-wsj02mix')
             },
             "3speakers": {
-                "sepformer": separator.from_hparams(
+                "sepformer-wsj03mix": separator.from_hparams(
                     source="speechbrain/sepformer-wsj03mix", 
                     savedir='pretrained_models/sepformer-wsj03mix')
             }
@@ -65,7 +68,7 @@ class Audio2AudioModels:
     def audio_model_function(self,noisy_batch: torch.tensor):
         model_function = None
         
-        if self.model_type == "enhancers":
+        if self.model_type == "enhancers" and self.model_name != "sepformer":
             model_function = self.models[self.model_type][self.model_name].enhance_batch
             return self.enhancer_template(
                 noisy_batch=noisy_batch,
