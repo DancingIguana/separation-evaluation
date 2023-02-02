@@ -39,3 +39,5 @@ if __name__ == "__main__":
         exit()
 
     hparams_file = sys.argv[-1]
+
+    prepare_mix_dataset(hparams_file=hparams_file)
