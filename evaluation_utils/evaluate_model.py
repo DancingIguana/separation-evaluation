@@ -77,7 +77,7 @@ def evaluate_model(
     sar = []
     memory = []
     main_source = []
-    for index, row in tqdm(dataset_df.iterrows()):
+    for index, row in tqdm(dataset_df.iterrows(),total=len(dataset_df)):
 
         # Get the mix file and the corresponding sources
         mix_file = row["mix_wav"]
