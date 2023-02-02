@@ -31,13 +31,21 @@ def prepare_mix_dataset(hparams_file: str):
         json.dump(dataset_info,f,indent=6)
 
     dataset_df.to_csv(os.path.join(hparams["path"],"dataset_info.csv"))
-        
+
+def prepare_multiple_mix_datasets(hparams_file_list: list):
+    for hparams_file in hparams_file_list:
+        prepare_mix_dataset(hparams_file)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or not os.path.exists(sys.argv[-1]):
+    if len(sys.argv) != 3 or not os.path.exists(sys.argv[-1]):
         print("Specify after the command line the path to the new dataset hyperparameters.")
         exit()
 
-    hparams_file = sys.argv[-1]
-
-    prepare_mix_dataset(hparams_file=hparams_file)
+    mode = sys.argv[-2]
+    hparams_file_or_list = sys.argv[-1]
+    if mode == "single":
+        prepare_mix_dataset(hparams_file=hparams_file_or_list)
+    elif mode == "multiple":
+        prepare_multiple_mix_datasets(hparams_file_or_list
+        )
