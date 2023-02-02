@@ -80,37 +80,3 @@ class Audio2AudioModels:
             mix_batch=noisy_batch,
             separator_function=model_function
         )
-
-    def enhancer_mtl_mimic(self,noisy_batch:torch.tensor):
-        enhancement_function = self.models["enhancers"]["mtl_mimic"].enhance_batch
-        return self.enhancer_template(
-            noisy_batch=noisy_batch,
-            enhancement_function=enhancement_function)
-
-
-    def enhancer_metricgan(self,noisy_batch:torch.tensor):
-        enhancement_function = self.models["enhancers"]["metricgan"].enhance_batch
-        return self.enhancer_template(
-            noisy_batch=noisy_batch,
-            enhancement_function=enhancement_function)
-
-
-    def separator_resepformer_2speakers(self,mix_batch:torch.tensor):
-        separator_function = self.models["2speakers"]["resepformer"].separate_batch
-        return self.separator_template(
-            mix_batch=mix_batch,
-            separator_function=separator_function)
-
-
-    def separator_sepformer_2speakers(self,mix_batch:torch.tensor):
-        separator_function = self.models["2speakers"]["sepformer"].separate_batch
-        return self.separator_template(
-            mix_batch=mix_batch,
-            separator_function=separator_function)
-
-
-    def separator_sepformer_3speakers(self,mix_batch: torch.tensor):
-        separator_function = self.models["3speakers"]["sepformer"].separate_batch
-        return self.separator_template(
-            mix_batch=mix_batch,
-            separator_function=separator_function)
