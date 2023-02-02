@@ -34,7 +34,9 @@ def prepare_mix_dataset(hparams_file: str):
 
 def prepare_multiple_mix_datasets(hparams_file_list: list):
     for hparams_file in hparams_file_list:
+        print(f"Generating dataset from {hparams_file}")
         prepare_mix_dataset(hparams_file)
+        print("\n\n")
 
 
 if __name__ == "__main__":
@@ -47,5 +49,6 @@ if __name__ == "__main__":
     if mode == "single":
         prepare_mix_dataset(hparams_file=hparams_file_or_list)
     elif mode == "multiple":
-        prepare_multiple_mix_datasets(hparams_file_or_list
-        )
+        with open(hparams_file_or_list,"r") as f: 
+            hparams_file_list = json.load(f)
+        prepare_multiple_mix_datasets(hparams_file_list=hparams_file_list)
