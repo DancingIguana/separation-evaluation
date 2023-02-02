@@ -68,7 +68,7 @@ class Audio2AudioModels:
     def audio_model_function(self,noisy_batch: torch.tensor):
         model_function = None
         
-        if self.model_type == "enhancers" and self.model_name != "sepformer":
+        if self.model_type == "enhancers" and "sepformer" not in self.model_name:
             model_function = self.models[self.model_type][self.model_name].enhance_batch
             return self.enhancer_template(
                 noisy_batch=noisy_batch,
