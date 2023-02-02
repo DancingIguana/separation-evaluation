@@ -20,9 +20,9 @@ class Audio2AudioModels:
                 "metricgan": SpectralMaskEnhancement.from_hparams(
                     source="speechbrain/metricgan-plus-voicebank",
                     savedir="pretrained_models/metricgan-plus-voicebank"),
-                "sepformer-whamr16k": separator.from_hparams(
-                    source="speechbrain/sepformer-whamr16k", 
-                    savedir='pretrained_models/sepformer-whamr16k')
+                "sepformer-wham16k": separator.from_hparams(
+                    source="speechbrain/sepformer-wham16k-enhancement", 
+                    savedir='pretrained_models/sepformer-wham16k-enhancement')
             },
             "2speakers": {
                 "resepformer-wsj02mix": separator.from_hparams(

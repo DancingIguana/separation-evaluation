@@ -17,6 +17,11 @@ enhance_model = SpectralMaskEnhancement.from_hparams(
     source="speechbrain/metricgan-plus-voicebank",
     savedir="pretrained_models/metricgan-plus-voicebank",
 )
+enhance_model = separator.from_hparams(
+    source="speechbrain/sepformer-wham16k-enhancement", 
+    savedir='pretrained_models/sepformer-wham16k-enhancement'
+)
+
 
 # 2-speaker
 #8K
