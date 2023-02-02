@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import random 
-import tqdm
+from tqdm import tqdm
 
 from speechbrain.dataio.dataio import read_audio
 from speechbrain.dataio.dataio import write_audio
@@ -239,7 +239,7 @@ def generate_mixture_files(
     # For each batch of the mixed signals save all of the mixes
     mix_counter_1 = 0
     mix_counter_2 = 0
-    for i in range(n_samples):
+    for i in tqdm(range(n_samples)):
         # Create folder for the sample
         sample_folder_name = f"{sample_folder_name_template}{i}"
         os.mkdir(directory_name + "/" + sample_folder_name)
