@@ -9,7 +9,8 @@ from tqdm import tqdm
 
 def evaluate_model(
     dataset_hparams_json: str,
-    model_separation_function, 
+    model_separation_function,
+    model_name: str, 
     ) -> tuple:
     """
     Given a dataframe indicating the mix column and its corresponding sources,
@@ -27,12 +28,13 @@ def evaluate_model(
 
     Parameters:
     ----------------------
-    - dataset_df: the dataframe containing a column of the mix file ('mix_wav') 
-    and a series of columns containing the source files for said mix ('si_wav')
-    - num_speakers: the number of sources that are in the mix
-    - model_separation_function: the function that given the mix returns the
-    estimated sources, time of execution and occupied memory
-    - samplerate: the samplerate of the mixes.
+    - dataset_hparams_json: the path of the hyperparameters file of the 
+        dataset.
+    - model_separation_function: the function used to separate the noisy batch
+        with Speechbrain. This function must return a tuple containing: 
+            (clean_batch,time,memory,perm).
+    - model_name: variable of the model name used for an edge case with 
+        mtl_mimic.
 
     Returns:
     ----------------------
@@ -86,6 +88,13 @@ def evaluate_model(
         mix = read_audio(mix_file)
         sources = [read_audio(source_file) for source_file in source_files]
 
+        # Exclusive case because mtl_mimic changes the size of tensors according
+        # to: size = (real_size//256)*256
+        if model_name == "mtl_mimic":
+            mix = mix[:((mix.shape[0])//256)*256]
+            sources = [source[:((mix.shape[0])//256)*256] for source in sources]
+
+
         mix_duration_ = mix.shape[0] / samplerate
 
         # Stack the sources in a tensor 
@@ -124,8 +133,7 @@ def evaluate_model(
                 # is the one we'll consider
                 avg_sir = np.mean(sir_)
                 avg_sdr = np.mean(sdr_)
-                #print(f"SIR: {sir_}")
-                #print(f"SDR: {sdr_}")
+
                 if (n_estimations > 1 and avg_sir > max_average_sir) or (n_estimations == 1 and avg_sdr > max_average_sdr): 
                     closest_to_estimate_sources = subset_indexed_sources
                     sdr_array = sdr_
@@ -133,12 +141,9 @@ def evaluate_model(
                     sar_array = sar_
                     max_average_sir = avg_sir
                     max_average_sdr = avg_sdr
-                    #print("Max average",max_average_sdr)
 
-            #print(f"Chosen:\n\t SIR:{sir_array}, \n\tSDR:{sdr_array} \n\tIndex: {[j[0] for j in subset_indexed_sources]}")
             for j in range(n_estimations):
-                
-                j_val = subset_indexed_sources[j][0]
+                j_val = subset_indexed_sources[j][0] # The source closest to the estimation
                 mix_wav.append(mix_file)
                 mix_duration.append(mix_duration_)
                 original_source.append(source_files[j_val])
@@ -152,6 +157,7 @@ def evaluate_model(
                 sar.append(sar_array[j])
                 sdr.append(sdr_array[j])
             continue
+
         # Evaluate the separation with mir_eval
         sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
             reference_sources=sources_stacked_tensor.numpy(),

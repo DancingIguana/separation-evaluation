@@ -101,9 +101,6 @@ class Audio2AudioModels:
         """
         model_function = None
         
-        if self.model_name == "mtl_mimic":
-            noisy_batch = noisy_batch[:,:(noisy_batch.shape[1]//256)*256]
-
         if self.model_type == "enhancers" and "sepformer" not in self.model_name:
             model_function = self.models[self.model_type][self.model_name].enhance_batch
             return self.enhancer_template(
