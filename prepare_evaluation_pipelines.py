@@ -4,6 +4,7 @@ indicate model type, model name, where to store the results
 and which datasets to generate (from their hparams files) for
 said evaluation.
 """
+import copy
 import json
 import os
 
@@ -25,29 +26,29 @@ models = {
 }
 
 # Load lists of dataset files
-with open("./mix_pipelines/all_16000.json", "r") as f:
+with open("./hparams/mix_datasets/all_16000.json", "r") as f:
     hparams_files_16000_datasets = json.load(f)
 
-with open("./mix_pipelines/for2speakers.json","r") as f:
+with open("./hparams/mix_datasets/for2speakers.json","r") as f:
     hparams_files_2speakers_datasets = json.load(f)
 
-with open("./mix_pipelines/for3speakers.json","r") as f:
+with open("./hparams/mix_datasets/for3speakers.json","r") as f:
     hparams_files_3speakers_datasets = json.load(f)
 
 
 # Enhancers evaluation pipeline
-hparams_enhancers = hparams_template.copy()
+hparams_enhancers = copy.deepcopy(hparams_template)
 hparams_enhancers["models"]["enhancers"] = models["enhancers"]
 hparams_enhancers["datasets"] = hparams_files_16000_datasets
 
 # 2speakers models evaluation pipeline
-hparams_2speakers = hparams_template.copy()
-hparams_2speakers["models"]["enhancers"] = models["2speakers"]
+hparams_2speakers = copy.deepcopy(hparams_template)
+hparams_2speakers["models"]["2speakers"] = models["2speakers"]
 hparams_2speakers["datasets"] = hparams_files_2speakers_datasets
 
 # 3speakers models evaluation pipeline
-hparams_3speakers = hparams_template.copy()
-hparams_3speakers["models"]["enhancers"] = models["3speakers"]
+hparams_3speakers = copy.deepcopy(hparams_template)
+hparams_3speakers["models"]["3speakers"] = models["3speakers"]
 hparams_3speakers["datasets"] = hparams_files_3speakers_datasets
 
 if not os.path.exists("./hparams/"): os.mkdir("./hparams/")

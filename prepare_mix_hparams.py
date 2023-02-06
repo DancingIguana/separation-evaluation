@@ -53,7 +53,7 @@ for num_speaker_val in num_speakers:
         for mix_snr_val in mix_snr:
             temp = noise_snr_val
             if not os.path.exists(f"./hparams/mix_datasets/{num_speaker_val}"):
-                os.mkdir(f"./mix_pipelines/{num_speaker_val}")
+                os.mkdir(f"./hparams/mix_datasets/{num_speaker_val}")
                 
            
             template["numSpeakers"] = num_speaker_val
