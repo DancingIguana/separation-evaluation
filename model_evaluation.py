@@ -59,9 +59,14 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
     for hparams_file in hparams["datasets"]:
         with open(hparams_file,"r") as f: data_hparams = json.load(f)
 
-        # If the dataset already exists, don't create it again
+        # If the dataset already exists, delete it or keep it if indicated
         if os.path.exists(data_hparams["path"]):
-            print("Dataset already exists, skipping generation")
+            if hparams["replaceExistingDatasets"]:
+                print("Replacing existing dataset")
+                shutil.rmtree(data_hparams["path"])
+                prepare_mix_dataset(hparams_file)
+            else:
+                print("Dataset already exists, skipping generation")
         else:
             # Prepare the dataset
             prepare_mix_dataset(hparams_file)
@@ -73,13 +78,14 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 if os.path.exists(results_file) and not hparams["replaceExistingResults"]:
                     print(f"{model_type} {model_name} previously evaluated with results in {results_file}. Skipping evaluation.")
                     continue
-
+                print(f"Evaluating {model_type} {model_name} with dataset {data_hparams['path']}")
                 evaluate_model_with_dataset(
-                    dataset_hparams_json = os.path.join(hparams_file["path"], "general_info.json"),
+                    dataset_hparams_json = os.path.join(data_hparams["path"], "general_info.json"),
                     model_name = model_name,
                     model_type = model_type,
                     results_path = results_file
                 )
+                print(f"Results stored in {results_file}")
         
         if hparams["deleteDatasetsAfterUse"]: shutil.rmtree(data_hparams["path"])
 

@@ -16,11 +16,12 @@ hparams_template = {
     },
     "datasets": [],
     "deleteDatasetsAfterUse": True,
+    "replaceExistingDatasets": True,
     "replaceExistingResults": False,
 }
 
 models = {
-    "enhancers": ["metricgan","sepformer","mtl_mimic"],
+    "enhancers": ["metricgan","sepformer-wham16k","mtl_mimic"],
     "2speakers": ["sepformer","resepformer"],
     "3speakers": ["sepformer"]
 }
