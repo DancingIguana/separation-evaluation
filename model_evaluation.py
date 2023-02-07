@@ -74,7 +74,7 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
         # Evaluate the same dataset in all of the specified models
         for model_type in hparams["models"]:
             for model_name in hparams["models"][model_type]:
-                results_file = os.path.join(results_root,f"{model_type}_{model_name}_{data_hparams['path'].split('.')[0]}.csv")
+                results_file = os.path.join(results_root,f"{model_type}_{model_name}_{data_hparams['path'].split('/')[-1]}.csv")
                 if os.path.exists(results_file) and not hparams["replaceExistingResults"]:
                     print(f"{model_type} {model_name} previously evaluated with results in {results_file}. Skipping evaluation.")
                     continue
