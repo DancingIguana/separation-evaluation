@@ -12,7 +12,7 @@ with open("./project_variables.json","r") as f:
     project_variables = json.load(f)
 
 hparams_root = project_variables["paths"]["hparamsRoot"]
-evaluation_hparams_root = project_variables["paths"]["hparamsRoot"]
+evaluation_hparams_root = project_variables["paths"]["evaluationHparamsRoot"]
 mix_dataset_hparams_root = project_variables["paths"]["mixDatasetHparamsRoot"]
 hparams_template = project_variables["templates"]["evaluationHparams"]
 models = {
