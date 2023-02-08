@@ -5,6 +5,7 @@ from speechbrain.pretrained import SpectralMaskEnhancement
 import torch
 import psutil
 import os
+import json
 
 class Audio2AudioModels:
     """
@@ -18,46 +19,16 @@ class Audio2AudioModels:
         in seconds.
     - memory: the amount of memory that was being used when running the model 
         in bytes.
-    
-    Parameters:
-    ---------------------
-    - model_type: the type of the model (enhancers, 2speakers, 3speakers).
-    - model_name: the specific name of the model, check audio2audio_models.py
-        for seeing the available models.
     """
-    def __init__(self, model_type:str, model_name: str):
-        assert(model_type in ["enhancers","2speakers","3speakers"], f"Model type {model_type} doesn't exist")
-        
-        self.model_type = model_type
-        self.model_name = model_name
-        self.models = {
-            "enhancers": {
-                "mtl_mimic": WaveformEnhancement.from_hparams( 
-                    source="speechbrain/mtl-mimic-voicebank",
-                    savedir="pretrained_models/mtl-mimic-voicebank"),
-                "metricgan": SpectralMaskEnhancement.from_hparams(
-                    source="speechbrain/metricgan-plus-voicebank",
-                    savedir="pretrained_models/metricgan-plus-voicebank"),
-                "sepformer-wham16k": separator.from_hparams(
-                    source="speechbrain/sepformer-wham16k-enhancement", 
-                    savedir='pretrained_models/sepformer-wham16k-enhancement')
-            },
-            "2speakers": {
-                "resepformer-wsj02mix": separator.from_hparams(
-                    source="speechbrain/resepformer-wsj02mix", 
-                    savedir='pretrained_models/resepformer-wsj02mix'),
-                "sepformer-wsj02mix": separator.from_hparams(
-                    source="speechbrain/sepformer-wsj02mix", 
-                    savedir='pretrained_models/sepformer-wsj02mix')
-            },
-            "3speakers": {
-                "sepformer-wsj03mix": separator.from_hparams(
-                    source="speechbrain/sepformer-wsj03mix", 
-                    savedir='pretrained_models/sepformer-wsj03mix')
-            }
-        }
+    def __init__(self):
+        self.model_type = None
+        self.model_name = None        
+        self.model = None
 
-        self.model = self.models[model_type][model_name]
+        with open("./project_variables.json", "r") as f:
+            project_variables = json.load(f)
+        
+        self.models = project_variables["models"]
 
     def enhancer_template(self,noisy_batch: torch.tensor, enhancement_function):
         """
@@ -66,9 +37,7 @@ class Audio2AudioModels:
         lengths = torch.tensor([1.])
         this_process = psutil.Process(os.getpid())
         st = time.time()
-        #print("Noisy batch size",noisy_batch.shape)
         estimate_source = enhancement_function(noisy_batch, lengths)
-        #print("Clean batch size",estimate_source.shape)
         et = time.time()
         elapsed_time = et - st
         memory = this_process.memory_info().rss
@@ -78,6 +47,7 @@ class Audio2AudioModels:
         """
         Function for the separators from Speechbrain.
         """
+
         this_process = psutil.Process(os.getpid())
         st = time.time()
         estimate_sources = separator_function(mix=mix_batch)
@@ -99,6 +69,7 @@ class Audio2AudioModels:
         - time it took to run the Speechbrain model with the batch in seconds.
         - the memory that was being used while running the function in bytes.
         """
+        assert(self.model != None)
         model_function = None
         
         if self.model_type == "enhancers" and "sepformer" not in self.model_name:
@@ -113,3 +84,40 @@ class Audio2AudioModels:
             mix_batch=noisy_batch,
             separator_function=model_function
         )
+
+    def load_model(self, model_type: str, model_name: str):
+        assert(model_type in self.models and model_name in self.models[model_type])
+        self.model_type = model_type
+        self.model_name = model_name
+        if model_type == "enhancers":
+            if model_name == "mtl-mimic":
+                self.model = WaveformEnhancement.from_hparams( 
+                    source="speechbrain/mtl-mimic-voicebank",
+                    savedir="pretrained_models/mtl-mimic-voicebank"
+                )
+            elif model_name == "metricgan":
+                self.model = SpectralMaskEnhancement.from_hparams(
+                    source="speechbrain/metricgan-plus-voicebank",
+                    savedir="pretrained_models/metricgan-plus-voicebank")
+
+            elif model_name == "sepformer-wham16k":
+                self.model = "sepformer-wham16k": separator.from_hparams(
+                    source="speechbrain/sepformer-wham16k-enhancement", 
+                    savedir='pretrained_models/sepformer-wham16k-enhancement'
+                )
+        elif model_type == "2speakers":
+            if model_name == "resepformer":
+                self.model = "resepformer-wsj02mix": separator.from_hparams(
+                    source="speechbrain/resepformer-wsj02mix", 
+                    savedir='pretrained_models/resepformer-wsj02mix'
+                )
+            elif model_name == "sepformer":
+                self.model = "sepformer-wsj02mix": separator.from_hparams(
+                    source="speechbrain/sepformer-wsj02mix", 
+                    savedir='pretrained_models/sepformer-wsj02mix')
+
+        elif model_type == "3speakers":
+            if model_name == "sepformer":
+                self.model = "sepformer-wsj03mix": separator.from_hparams(
+                    source="speechbrain/sepformer-wsj03mix", 
+                    savedir='pretrained_models/sepformer-wsj03mix')

@@ -38,7 +38,8 @@ def evaluate_model_with_dataset(
         - mixAugmentationPipeline: the pipeline of mix methods applied to the 
             overall mix.
     """
-    audio_model = Audio2AudioModels(model_type=model_type,model_name=model_name)
+    audio_model = Audio2AudioModels()
+    audio_model.load_model(model_type = model_type, model_name = model_name)
 
     results_df = evaluate_model(
             dataset_hparams_json = dataset_hparams_json,
