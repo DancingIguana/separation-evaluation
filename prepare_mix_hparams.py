@@ -36,7 +36,7 @@ for num_speaker_val in num_speakers:
                 os.mkdir(os.path.join(mix_dataset_hparams_root,"1"))
             #We aren't interested in clean sources:
             if noise_snr_val == None: continue
-            template["path"] = os.join(
+            template["path"] = os.path.join(
                 mix_dataset_hparams_root,
                 f"{num_speaker_val}_{noise_snr_val}_N_16000"
             )
@@ -63,10 +63,10 @@ for num_speaker_val in num_speakers:
         for mix_snr_val in mix_snr:
             temp = noise_snr_val
             if not os.path.exists(
-                os.path.join(mix_dataset_hparams_root,num_speaker_val)
+                os.path.join(mix_dataset_hparams_root,str(num_speaker_val))
             ):
                 os.mkdir(
-                    os.path.join(mix_dataset_hparams_root,num_speaker_val)
+                    os.path.join(mix_dataset_hparams_root,str(num_speaker_val))
                 )
                 
            
@@ -97,7 +97,7 @@ for num_speaker_val in num_speakers:
                 with open(
                     os.path.join(
                         mix_dataset_hparams_root,
-                        num_speaker_val,
+                        str(num_speaker_val),
                         f"{temp}_{mix_snr_val}_{samplerate}.json"
                     ), "w") as f: 
                     json.dump(template, f,indent=6)
