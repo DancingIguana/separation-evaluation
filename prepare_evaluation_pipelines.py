@@ -15,11 +15,7 @@ hparams_root = project_variables["paths"]["hparamsRoot"]
 evaluation_hparams_root = project_variables["paths"]["evaluationHparamsRoot"]
 mix_dataset_hparams_root = project_variables["paths"]["mixDatasetHparamsRoot"]
 hparams_template = project_variables["templates"]["evaluationHparams"]
-models = {
-    "enhancers": ["metricgan","sepformer-wham16k","mtl_mimic"],
-    "2speakers": ["sepformer","resepformer"],
-    "3speakers": ["sepformer"]
-}
+models = project_variables["models"]
 
 # Load lists of dataset files
 with open(os.path.join(mix_dataset_hparams_root,"for_enhancers.json"), "r") as f:
