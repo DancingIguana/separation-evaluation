@@ -73,13 +73,13 @@ class Audio2AudioModels:
         model_function = None
         
         if self.model_type == "enhancers" and "sepformer" not in self.model_name:
-            model_function = self.models[self.model_type][self.model_name].enhance_batch
+            model_function = self.model.enhance_batch
             return self.enhancer_template(
                 noisy_batch=noisy_batch,
                 enhancement_function=model_function
             )
         
-        model_function = self.models[self.model_type][self.model_name].separate_batch
+        model_function = self.model.separate_batch
         return self.separator_template(
             mix_batch=noisy_batch,
             separator_function=model_function
