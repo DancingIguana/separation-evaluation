@@ -101,23 +101,23 @@ class Audio2AudioModels:
                     savedir="pretrained_models/metricgan-plus-voicebank")
 
             elif model_name == "sepformer-wham16k":
-                self.model = "sepformer-wham16k": separator.from_hparams(
+                self.model = separator.from_hparams(
                     source="speechbrain/sepformer-wham16k-enhancement", 
                     savedir='pretrained_models/sepformer-wham16k-enhancement'
                 )
         elif model_type == "2speakers":
             if model_name == "resepformer":
-                self.model = "resepformer-wsj02mix": separator.from_hparams(
+                self.model = separator.from_hparams(
                     source="speechbrain/resepformer-wsj02mix", 
                     savedir='pretrained_models/resepformer-wsj02mix'
                 )
             elif model_name == "sepformer":
-                self.model = "sepformer-wsj02mix": separator.from_hparams(
+                self.model = separator.from_hparams(
                     source="speechbrain/sepformer-wsj02mix", 
                     savedir='pretrained_models/sepformer-wsj02mix')
 
         elif model_type == "3speakers":
             if model_name == "sepformer":
-                self.model = "sepformer-wsj03mix": separator.from_hparams(
+                self.model = separator.from_hparams(
                     source="speechbrain/sepformer-wsj03mix", 
                     savedir='pretrained_models/sepformer-wsj03mix')
