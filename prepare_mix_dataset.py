@@ -22,8 +22,8 @@ def prepare_mix_dataset(hparams_file: str):
         snr_low=hparams["mixSNR"],
         source_augmentation_pipeline=hparams["sourceAugmentationPipeline"],
         mix_augmentation_pipeline=hparams["mixAugmentationPipeline"],
-        original_samplerate=hparams["originalDataSamplerate"],
-        new_samplerate=hparams["newSamplerate"]
+        original_samplerate=hparams["originalSampleRate"],
+        new_samplerate=hparams["newSampleRate"]
     )
 
 
