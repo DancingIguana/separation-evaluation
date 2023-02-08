@@ -90,11 +90,14 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
         if hparams["deleteDatasetsAfterUse"]: shutil.rmtree(data_hparams["path"])
 
 if __name__ == "__main__":
-    if len(sys.argv) !=2:
+    if len(sys.argv) != 3:
         print("Invalid arguments, structure is as follows:")
-        print("python3 model_evaluation.py {hparams_file.json}")
+        print("python3 model_evaluation.py {hparams_file.json} {results_root}")
         print("Example: python3 model_evaluation.py ./hparams/evaluation/enhancers.json")
         exit()
 
     eval_hparams_json = sys.argv[1]
-    multi_evaluation(multi_evaluation_json=eval_hparams_json)
+    results_root = sys.argv[2]
+    multi_evaluation(
+        multi_evaluation_json=eval_hparams_json,
+        results_root=results_root)
