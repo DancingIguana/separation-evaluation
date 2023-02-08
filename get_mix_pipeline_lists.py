@@ -8,7 +8,7 @@ all_16000_pipelines = [
     if "16000.json" in f
 ]
 
-with open("./hparams/mix_datasets/all_16000.json","w") as f:
+with open("./hparams/mix_datasets/for_enhancers.json","w") as f:
     json.dump(all_16000_pipelines, f, indent=6)
 
 

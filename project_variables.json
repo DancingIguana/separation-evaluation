@@ -1,0 +1,53 @@
+{
+    "templates": {
+        "mixHparams": {
+            "path": "",
+            "dataRoot": "./data/MiniLibriSpeech",
+            "originalDatasetCsv": "./data/MiniLibriSpeech/LibriSpeech/test.csv",
+            "originalDataSamplerate": null,
+            "newSamplerate": null,
+            "numSpeakers": 0,
+            "mixSNR": 0,
+            "sourceAugmentationPipeline": [],
+            "mixAugmentationPipeline": []
+        },
+        "evaluationHparams": {
+            "models": {
+                "enhancers": [],
+                "2speakers": [],
+                "3speakers": []
+            },
+            "datasets": [],
+            "deleteDatasetsAfterUse": true,
+            "replaceExistingDatasets": true,
+            "replaceExistingResults": false
+        }
+    },
+    "MLS": {
+            "directory": "./data/MiniLibriSpeech",
+            "json_train": "train.json",
+            "json_test": "test.json",
+            "json_valid": "valid.json",
+            "csv_train": "train.csv",
+            "csv_valid": "valid.csv",
+            "csv_test": "test.csv"
+    },
+    "mixHparamsGenerator": {
+        "originalDataSamplerate": 16000,
+        "newSamplerate": 8000,
+        "numSpeakers": [1,2,3],
+        "mixSNR": [-5,0,5,10,15],
+        "whiteNoiseSNR": [null,-5,0,5,10,15]
+    },
+    "paths": {
+        "hparamsRoot": "./hparams",
+        "mixDatasetHparamsRoot": "./hparams/mix_datasets/",
+        "evaluationHparamsRoot": "./hparams/evaluation/",
+        "mixDatasetsRoot": "./data/"
+    },
+    "models": {
+        "enhancers": ["metricgan","sepformer-wham16k","mlt_mimic"],
+        "2speakers": ["sepformer","resepformer"],
+        "3speakers": ["sepformer"]
+    }
+}
