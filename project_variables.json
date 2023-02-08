@@ -33,8 +33,8 @@
             "csv_test": "test.csv"
     },
     "mixHparamsGenerator": {
-        "originalDataSamplerate": 16000,
-        "newSamplerate": 8000,
+        "originalSampleRate": 16000,
+        "newSampleRate": 8000,
         "numSpeakers": [1,2,3],
         "mixSNR": [-5,0,5,10,15],
         "whiteNoiseSNR": [null,-5,0,5,10,15]
