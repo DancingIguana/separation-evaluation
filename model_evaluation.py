@@ -67,10 +67,10 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 shutil.rmtree(data_hparams["path"])
                 prepare_mix_dataset(hparams_file)
             else:
-                print("Dataset already exists, skipping generation")
+                print("\nDataset already exists, skipping generation")
         else:
             # Prepare the dataset
-            print(f"Preparing dataset from {hparams_file}")
+            print(f"\nPreparing dataset from {hparams_file}")
             prepare_mix_dataset(hparams_file)
             print("\n")
         
