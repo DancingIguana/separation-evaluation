@@ -53,30 +53,24 @@ def prepare_mini_librispeech(
     """
 
     # Check if this phase is already done (if so, skip it)
-    if skip(save_json_train, save_json_valid, save_json_test, save_csv_train, save_csv_test, save_csv_valid):
+    if skip(save_json_test, save_csv_test):
         logger.info("Preparation completed in previous run, skipping.")
         return
 
     # If the dataset doesn't exist yet, download it
-    train_folder = os.path.join(data_folder, "LibriSpeech", "train-clean-5")
-    valid_folder = os.path.join(data_folder, "LibriSpeech", "dev-clean-2")
     test_folder = os.path.join(data_folder, "LibriSpeech", "test-clean")
-    if not check_folders(train_folder, valid_folder, test_folder):
-        download_mini_librispeech(data_folder)
 
+    if not check_folders(test_folder):
+        download_mini_librispeech(data_folder)
     # List files and create manifest from list
     logger.info(
         f"Creating {save_json_train}, {save_json_valid}, and {save_json_test}"
     )
     extension = [".flac"]
-    wav_list_train = get_all_files(train_folder, match_and=extension)
-    wav_list_valid = get_all_files(valid_folder, match_and=extension)
+
     wav_list_test = get_all_files(test_folder, match_and=extension)
-    create_json(wav_list_train, save_json_train)
-    create_json(wav_list_valid, save_json_valid)
+
     create_json(wav_list_test, save_json_test)
-    create_csv(wav_list_train,save_csv_train)
-    create_csv(wav_list_valid,save_csv_valid)
     create_csv(wav_list_test,save_csv_test)
 
 
@@ -123,10 +117,7 @@ def create_csv(wav_list,csv_file):
     durations = [None for i in range(n)]
     wavs = [None for i in range(n)]
     wav_formats = [None for i in range(n)]
-    wav_opts = [None for i in range(n)]
     spk_ids = [None for i in range(n)]
-    spk_id_formats = ["string" for i in range(n)]
-    spk_id_opts = [None for i in range(n)]
 
     for i,wav_file in enumerate(wav_list):
         ids[i] = i
@@ -148,10 +139,7 @@ def create_csv(wav_list,csv_file):
         "duration": durations,
         "wav": wavs,
         "wav_format": wav_formats,
-        #"wav_opts": wav_opts,
         "spk_id":spk_ids,
-        #"spk_id_format":spk_id_formats,
-        #"spk_id_opts":spk_id_opts
         })
     df.to_csv(csv_file,index=False)
 
@@ -189,12 +177,9 @@ def download_mini_librispeech(destination):
     destination : str
         Place to put dataset.
     """
-    train_archive = os.path.join(destination, "train-clean-5.tar.gz")
-    valid_archive = os.path.join(destination, "dev-clean-2.tar.gz")
+
     test_archive = os.path.join(destination, "test-clean.tar.gz")
-    download_file(MINILIBRI_TRAIN_URL, train_archive)
-    download_file(MINILIBRI_VALID_URL, valid_archive)
+
     download_file(MINILIBRI_TEST_URL, test_archive)
-    shutil.unpack_archive(train_archive, destination)
-    shutil.unpack_archive(valid_archive, destination)
+
     shutil.unpack_archive(test_archive, destination)
