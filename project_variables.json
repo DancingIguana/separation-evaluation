@@ -46,7 +46,7 @@
         "mixDatasetsRoot": "./data/"
     },
     "models": {
-        "enhancers": ["metricgan","sepformer-wham16k","mlt-mimic"],
+        "enhancers": ["metricgan","sepformer-wham16k","mtl-mimic"],
         "2speakers": ["sepformer","resepformer"],
         "3speakers": ["sepformer"]
     }
