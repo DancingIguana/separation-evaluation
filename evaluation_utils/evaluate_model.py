@@ -90,7 +90,7 @@ def evaluate_model(
 
         # Exclusive case because mtl_mimic changes the size of tensors according
         # to: size = (real_size//256)*256
-        if model_name == "mtl_mimic":
+        if model_name == "mtl-mimic":
             mix = mix[:((mix.shape[0])//256)*256]
             sources = [source[:((mix.shape[0])//256)*256] for source in sources]
 
