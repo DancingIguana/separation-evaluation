@@ -32,7 +32,7 @@ def setup_mix_hparams(project_variables_file: str) -> None:
                     mix_dataset_hparams_root,
                     f"{num_speaker_val}_{noise_snr_val}_N_16000"
                 )
-                template["newSamplerate"] = 16000
+                template["newSampleRate"] = 16000
                 template["numSpeakers"] = num_speaker_val
                 template["mixAugmentationPipeline"] = [
                     {
