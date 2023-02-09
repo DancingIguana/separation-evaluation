@@ -59,7 +59,7 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
 
     for hparams_file in hparams["datasets"]:
         with open(hparams_file,"r") as f: data_hparams = json.load(f)
-
+        # Evaluate the same dataset in all of the specified models
         # If the dataset already exists, delete it or keep it if indicated
         if os.path.exists(data_hparams["path"]):
             if hparams["replaceExistingDatasets"]:
@@ -68,19 +68,17 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 prepare_mix_dataset(hparams_file)
             else:
                 print("\nDataset already exists, skipping generation")
-        else:
-            # Prepare the dataset
-            print(f"\nPreparing dataset from {hparams_file}")
-            prepare_mix_dataset(hparams_file)
-            print("\n")
-        
-        # Evaluate the same dataset in all of the specified models
         for model_type in hparams["models"]:
             for model_name in hparams["models"][model_type]:
                 results_file = os.path.join(results_root,f"{model_type}_{model_name}_{data_hparams['path'].split('/')[-1]}.csv")
                 if os.path.exists(results_file) and not hparams["replaceExistingResults"]:
                     print(f"{model_type} {model_name} previously evaluated with results in {results_file}. Skipping evaluation.")
-                    continue
+                    continue         
+                if not os.path.exists(data_hparams["path"]):
+                    # Prepare the dataset
+                    print(f"\nPreparing dataset from {hparams_file}")
+                    prepare_mix_dataset(hparams_file)
+                    print("\n")
                 print(f"Evaluating {model_type} {model_name} with dataset {data_hparams['path']}")
                 evaluate_model_with_dataset(
                     dataset_hparams_json = os.path.join(data_hparams["path"], "general_info.json"),
