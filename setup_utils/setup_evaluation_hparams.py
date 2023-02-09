@@ -56,11 +56,17 @@ def setup_evaluation_hparams(project_variables_file: str) -> None:
     if not os.path.exists(evaluation_hparams_root): 
         os.mkdir(evaluation_hparams_root)
 
-    with open(os.path.join(evaluation_hparams_root,"enhancers.json"), "w") as f: 
+    enhancers_json = os.path.join(evaluation_hparams_root,"enhancers.json")
+    for2speakers_json = os.path.join(evaluation_hparams_root,"2speakers.json")
+    for3speakers_json = os.path.join(evaluation_hparams_root,"3speakers.json")
+    with open(enhancers_json, "w") as f: 
         json.dump(hparams_enhancers,f,indent=6)
 
-    with open(os.path.join(evaluation_hparams_root,"2speakers.json"), "w") as f: 
+    with open(for2speakers_json, "w") as f: 
         json.dump(hparams_2speakers,f,indent=6)
 
-    with open(os.path.join(evaluation_hparams_root,"3speakers.json"), "w") as f: 
+    with open(for3speakers_json, "w") as f: 
         json.dump(hparams_3speakers,f,indent=6)
+
+    with open(os.path.join(evaluation_hparams_root,"evaluation_hparams_files.json"),"w") as f:
+        json.dump([enhancers_json,for2speakers_json,for3speakers_json],f,indent=6)
