@@ -88,7 +88,7 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 )
                 print(f"Results stored in {results_file}")
         
-        if hparams["deleteDatasetsAfterUse"]: 
+        if os.path.exists(data_hparams['path']) and hparams["deleteDatasetsAfterUse"]: 
             print(f"Deleting dataset {data_hparams['path']}")
             shutil.rmtree(data_hparams["path"])
 
