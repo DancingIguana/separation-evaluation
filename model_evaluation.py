@@ -70,7 +70,9 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 print("Dataset already exists, skipping generation")
         else:
             # Prepare the dataset
+            print(f"Preparing dataset from {hparams_file}")
             prepare_mix_dataset(hparams_file)
+            print("\n")
         
         # Evaluate the same dataset in all of the specified models
         for model_type in hparams["models"]:
@@ -88,7 +90,9 @@ def multi_evaluation(multi_evaluation_json, results_root = "./results/"):
                 )
                 print(f"Results stored in {results_file}")
         
-        if hparams["deleteDatasetsAfterUse"]: shutil.rmtree(data_hparams["path"])
+        if hparams["deleteDatasetsAfterUse"]: 
+            print(f"Deleting dataset {data_hparams['path']}")
+            shutil.rmtree(data_hparams["path"])
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
