@@ -1,7 +1,6 @@
-from speechbrain.pretrained import SepformerSeparation as separator
-from speechbrain.pretrained import WaveformEnhancement
-from speechbrain.pretrained import SpectralMaskEnhancement
 from audio2audio_models import Audio2AudioModels
+
+import json
 
 def setup_models(project_variables_file: str) -> None:
     """
@@ -13,7 +12,7 @@ def setup_models(project_variables_file: str) -> None:
     models = project_variables["models"]
     model_class = Audio2AudioModels()
     for model_type in models:
-        for model_name in model_type:
+        for model_name in models[model_type]:
             model_class.load_model(
                 model_type = model_type, 
                 model_name = model_name

@@ -3,8 +3,42 @@ import sys
 import json
 from setup_utils import setup_minilibrispeech, setup_models, setup_evaluation_hparams, setup_mix_hparams
 
-if "__init__" == "__main__":
-    # Read args: data, hparams, eval_hparams, mix_hparams, all
+def setup_project(setup_type: str, project_variables_file: str) -> None:
+    if setup_type == "data":
+        print("Setting up MiniLibriSpeech...")
+        setup_minilibrispeech(project_variables_file)
+
+    elif setup_type == "models":
+        print("Setting up models...")
+        setup_models(project_variables_file)
+
+    elif setup_type == "hparams":
+        print("Setting up mixes hyperparameters...")
+        setup_mix_hparams(project_variables_file)
+        print("Setting up evaluation hyperparameters...")
+        setup_evaluation_hparams(project_variables_file)
+
+    elif setup_type == "eval_hparams":
+        print("Setting up evaluation hyperparameters...")
+        setup_evaluation_hparams(project_variables_file)
+
+    elif setup_type == "mix_hparams":
+        print("Setting up mixes hyperparameters...")
+        setup_mix_hparams(project_variables_file)
+
+    elif setup_type == "all":
+        print("Setting up models...")
+        setup_models(project_variables_file)
+        print("\n\nSetting up MiniLibriSpeech...")
+        setup_minilibrispeech(project_variables_file)
+        print("\n\nSetting up data mixtures hyperparameters...")
+        setup_minilibrispeech(project_variables_file)
+        print("\n\nSetting up evaluation hyperparameters...")
+        setup_evaluation_hparams(project_variables_file)
+    print("Done!")
+        
+
+if "__name__" == "__main__":
     setup_types = ["data","hparams","eval_hparams", "mix_hparams", "models","all"]
     variables = sys.argv
     if len(variables) != 2 or variables[1] not in setup_types:
@@ -13,29 +47,6 @@ if "__init__" == "__main__":
         print("Where setup_type might be:")
         print("- data\n- hparams\n- eval_hparams\n- mix_hparams\n- all")
 
-    
     setup_type = variables[1]
     project_variables_file= "./project_variables.json"
-    #Setup data
-    if setup_type == "data":
-        setup_minilibrispeech(project_variables_file)
-    elif setup_type == "models":
-        setup_models(project_variables_file)
-    elif setup_type == "hparams":
-        setup_mix_hparams(project_variables_file)
-        setup_evaluation_hparams(project_variables_file)
-    elif setup_type == "eval_hparams":
-        setup_evaluation_hparams(project_variables_file)
-    elif setup_type == "mix_hparams":
-        setup_mix_hparams(project_variables_file)
-    elif setup_type == "all":
-        print("Setting up models...")
-        setup_models(project_variables_file)
-        print("Setting up MiniLibriSpeech...")
-        setup_minilibrispeech(project_variables_file)
-        print("Setting up data mixtures hyperparameters...")
-        setup_minilibrispeech(project_variables_file)
-        print("Setting up evaluation hyperparameters...")
-        setup_evaluation_hparams(project_variables_file)
-        print("Project successfully setup")
-        
+    setup_project(setup_type, project_variables_file)
