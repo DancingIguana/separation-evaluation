@@ -5,7 +5,7 @@ from setup_utils import setup_minilibrispeech, setup_models, setup_evaluation_hp
 
 if "__init__" == "__main__":
     # Read args: data, hparams, eval_hparams, mix_hparams, all
-    setup_types = ["data","hparams","eval_hparams", "mix_hparams", "models", "all"]
+    setup_types = ["data","hparams","eval_hparams", "mix_hparams", "models","all"]
     variables = sys.argv
     if len(variables) != 2 or variables[1] not in setup_types:
         print("Invalid arguments, structure must be as follows:")
@@ -23,10 +23,19 @@ if "__init__" == "__main__":
         setup_models(project_variables_file)
     elif setup_type == "hparams":
         setup_mix_hparams(project_variables_file)
+        setup_evaluation_hparams(project_variables_file)
     elif setup_type == "eval_hparams":
         setup_evaluation_hparams(project_variables_file)
     elif setup_type == "mix_hparams":
         setup_mix_hparams(project_variables_file)
     elif setup_type == "all":
-        None
-    #Setup hyperparameters
+        print("Setting up models...")
+        setup_models(project_variables_file)
+        print("Setting up MiniLibriSpeech...")
+        setup_minilibrispeech(project_variables_file)
+        print("Setting up data mixtures hyperparameters...")
+        setup_minilibrispeech(project_variables_file)
+        print("Setting up evaluation hyperparameters...")
+        setup_evaluation_hparams(project_variables_file)
+        print("Project successfully setup")
+        

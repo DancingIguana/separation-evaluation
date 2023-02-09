@@ -13,14 +13,27 @@ def setup_evaluation_hparams(project_variables_file: str) -> None:
     models = project_variables["models"]
 
     # Load lists of dataset files
-    with open(os.path.join(mix_dataset_hparams_root,"for_enhancers.json"), "r") as f:
-        hparams_files_16000_datasets = json.load(f)
+    hparams_files_16000_datasets = [
+        os.path.join(dp, f) for dp, dn, filenames 
+        in os.walk(mix_dataset_hparams_root) for f in filenames 
+        if "16000.json" in f
+    ]
 
-    with open(os.path.join(mix_dataset_hparams_root,"for2speakers.json"),"r") as f:
-        hparams_files_2speakers_datasets = json.load(f)
+    hparams_files_2speakers_datasets = [
+        os.path.join(dp, f) 
+        for dp, dn, filenames in os.walk(mix_dataset_hparams_root) 
+        for f in filenames if "8000.json" in f 
+        and "2" in os.path.join(dp,f).split("/")
+        or "3" in os.path.join(dp,f).split("/")
+    ]
 
-    with open(os.path.join(mix_dataset_hparams_root,"for3speakers.json"),"r") as f:
-        hparams_files_3speakers_datasets = json.load(f)
+    # For 3speakers
+    hparams_files_3speakers_datasets = [
+        os.path.join(dp, f) 
+        for dp, dn, filenames in os.walk(mix_dataset_hparams_root) 
+        for f in filenames if "8000.json" in f 
+        and "3" in os.path.join(dp,f).split("/")
+    ]
 
 
     # Enhancers evaluation pipeline
