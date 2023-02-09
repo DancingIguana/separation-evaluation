@@ -32,13 +32,13 @@ def setup_project(setup_type: str, project_variables_file: str) -> None:
         print("\n\nSetting up MiniLibriSpeech...")
         setup_minilibrispeech(project_variables_file)
         print("\n\nSetting up data mixtures hyperparameters...")
-        setup_minilibrispeech(project_variables_file)
+        setup_mix_hparams(project_variables_file)
         print("\n\nSetting up evaluation hyperparameters...")
         setup_evaluation_hparams(project_variables_file)
     print("Done!")
         
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     setup_types = ["data","hparams","eval_hparams", "mix_hparams", "models","all"]
     variables = sys.argv
     if len(variables) != 2 or variables[1] not in setup_types:

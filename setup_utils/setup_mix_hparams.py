@@ -1,8 +1,9 @@
 import json
+import os
 
 def setup_mix_hparams(project_variables_file: str) -> None:
     with open(project_variables_file, "r") as f:
-        project_vriables = json.load(f)
+        project_variables = json.load(f)
 
     template = project_variables["templates"]["mixHparams"]
     hparams_root = project_variables["paths"]["hparamsRoot"]
