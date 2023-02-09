@@ -23,11 +23,7 @@ SAMPLERATE = 16000
 
 def prepare_mini_librispeech(
     data_folder, 
-    save_json_train, 
-    save_json_valid, 
     save_json_test,
-    save_csv_train,
-    save_csv_valid,
     save_csv_test
 ):
     """
@@ -63,8 +59,11 @@ def prepare_mini_librispeech(
     if not check_folders(test_folder):
         download_mini_librispeech(data_folder)
     # List files and create manifest from list
+    #logger.info(
+    #    f"Creating {save_json_train}, {save_json_valid}, and {save_json_test}"
+    #)
     logger.info(
-        f"Creating {save_json_train}, {save_json_valid}, and {save_json_test}"
+        f"Creating {save_json_test}"
     )
     extension = [".flac"]
 

@@ -10,10 +10,6 @@ def setup_minilibrispeech(project_variables_file: str) -> None:
 
     prepare_mini_librispeech(
         data_folder=mls_params["directory"],
-        save_json_train=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["json_train"]),
         save_json_test=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["json_test"]),
-        save_json_valid=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["json_valid"]),
-        save_csv_train=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["csv_train"]),
         save_csv_test=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["csv_test"]),
-        save_csv_valid=os.path.join(mls_params["directory"],"LibriSpeech",mls_params["csv_valid"]),
     )
