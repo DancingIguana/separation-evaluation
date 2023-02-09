@@ -6,6 +6,8 @@
             "originalDatasetCsv": "./data/MiniLibriSpeech/LibriSpeech/test.csv",
             "originalSampleRate": 16000,
             "newSampleRate": 8000,
+            "groupingsRoot": "./hparams/groupings/",
+            "recycleGroupings":true,
             "numSpeakers": 0,
             "mixSNR": 0,
             "sourceAugmentationPipeline": [],

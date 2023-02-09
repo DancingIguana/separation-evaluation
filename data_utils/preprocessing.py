@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import random 
 from tqdm import tqdm
+import json
 
 from speechbrain.dataio.dataio import read_audio
 from speechbrain.dataio.dataio import write_audio
@@ -407,6 +408,8 @@ def generate_speech_mix_dataset(
     original_data_root: str,
     original_dataset_csv: str, 
     num_speakers: int,
+    groupings_root: str,
+    recycle_groupings: bool,
     snr_high: float = 0,
     snr_low: float = 0,
     source_augmentation_pipeline: list = [],
@@ -448,21 +451,28 @@ def generate_speech_mix_dataset(
         print("Insufficient number of speakers. ")
         return
 
-    #TODO: consider case when num_speakers = 1 to consider only augmented signals
-    # and no mixtures as such
-    #if num_speakers == 1: return
-
+    if not os.path.exists(groupings_root): os.mkdir(groupings_root)
     speaker_count = num_speakers - 1
 
     # Get the dataset files' general information
     df = pd.read_csv(original_dataset_csv)
 
     # Generate groupings
-    print("Generating groupings...")
-    groupings = generate_file_groupings(
-        files_df = df, 
-        num_speakers = num_speakers
-        )
+    groupings_path = os.path.join(groupings_root,f"{num_speakers}_groupings.json")
+    if recycle_groupings and os.path.exists(groupings_path):
+        print(f"Recycling groupings from {groupings_path}")
+        with open(groupings_path,"r") as f:
+            groupings = json.load(f)
+    else:
+        print("Generating groupings...")
+        groupings = generate_file_groupings(
+            files_df = df, 
+            num_speakers = num_speakers
+            )
+        with open(groupings_path,"w") as f:
+            json.dump(groupings,f,indent=6)
+        print(f"Groupings available at: {groupings_path}")
+    print(groupings)
 
     # Given the groupings, get the padded tensors for the files
     print("Passing info to batches...")

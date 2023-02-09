@@ -18,6 +18,8 @@ def prepare_mix_dataset(hparams_file: str):
         original_data_root = hparams["dataRoot"],
         original_dataset_csv=hparams["originalDatasetCsv"],
         num_speakers=hparams["numSpeakers"],
+        groupings_root=hparams["groupingsRoot"],
+        recycle_groupings=hparams["recycleGroupings"],
         snr_high=hparams["mixSNR"],
         snr_low=hparams["mixSNR"],
         source_augmentation_pipeline=hparams["sourceAugmentationPipeline"],
