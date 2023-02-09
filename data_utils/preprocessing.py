@@ -472,7 +472,6 @@ def generate_speech_mix_dataset(
         with open(groupings_path,"w") as f:
             json.dump(groupings,f,indent=6)
         print(f"Groupings available at: {groupings_path}")
-    print(groupings)
 
     # Given the groupings, get the padded tensors for the files
     print("Passing info to batches...")
