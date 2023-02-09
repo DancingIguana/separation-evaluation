@@ -46,7 +46,7 @@ def setup_mix_hparams(project_variables_file: str) -> None:
                     os.path.join(
                         mix_dataset_hparams_root,
                         "1",
-                        f"{noise_snr_val}_N_{template['newSamplerate']}.json"
+                        f"{noise_snr_val}_N_{template['newSampleRate']}.json"
                     ), "w") as f:
                     json.dump(template,f,indent=6)
                 continue
@@ -69,7 +69,7 @@ def setup_mix_hparams(project_variables_file: str) -> None:
                     template["path"] = os.path.join(
                         mix_datasets_root,
                         f"{num_speaker_val}_{noise_snr_val}_{mix_snr_val}_{samplerate}")
-                    template["newSamplerate"] = samplerate
+                    template["newSampleRate"] = samplerate
 
 
                     if noise_snr_val != None:
