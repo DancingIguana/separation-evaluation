@@ -23,8 +23,8 @@ def setup_evaluation_hparams(project_variables_file: str) -> None:
         os.path.join(dp, f) 
         for dp, dn, filenames in os.walk(mix_dataset_hparams_root) 
         for f in filenames if "8000.json" in f 
-        and "2" in os.path.join(dp,f).split("/")
-        or "3" in os.path.join(dp,f).split("/")
+        and ("2" in os.path.join(dp,f).split("/")
+        or "3" in os.path.join(dp,f).split("/"))
     ]
 
     # For 3speakers
