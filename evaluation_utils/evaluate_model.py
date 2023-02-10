@@ -143,7 +143,7 @@ def evaluate_model(
                     max_average_sdr = avg_sdr
 
             for j in range(n_estimations):
-                j_val = closest_to_estimate_sources[j][0] # The source closest to the estimation
+                j_val = closest_to_estimate_sources[perm[j]][0] # The source closest to the estimation
                 mix_wav.append(mix_file)
                 mix_duration.append(mix_duration_)
                 original_source.append(source_files[j_val])
