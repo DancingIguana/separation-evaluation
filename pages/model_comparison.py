@@ -1,7 +1,7 @@
 import dash
 from dash import Dash, dcc, html, Input, Output, dash_table, callback
-
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 import plotly.express as px
 import pandas as pd
 import os
@@ -90,7 +90,8 @@ model_comparison_layout = html.Div(children = [
                 step = 5,
                 value=[-5,15],
                 id="cur_wn_snr"
-            )
+            ),
+            daq.BooleanSwitch(id="has_white_noise", on=True),
         ]),
         html.Br(),
         html.Label("Models to compare:"),
@@ -250,6 +251,7 @@ def update_comparison_dropdowns(eval_mode):
     Input("cur_num_speakers","value"),
     Input("cur_mix_snr","value"),
     Input("cur_wn_snr","value"),
+    Input("has_white_noise","value"),
     Input("cur_model","value"),
     Input("cur_variable","value"),
     Input("cur_xaxis","value")]
@@ -260,6 +262,7 @@ def update_graph(
     num_speakers,
     mix_snr,
     wn_snr,
+    has_white_noise,
     model_type_name_list,
     variable,
     xaxis):
@@ -268,7 +271,10 @@ def update_graph(
     df = pd.read_csv(str(os.path.join("app_datasets",data_file)))
     df = df[(df["num_speakers_in_mix"] >= num_speakers[0]) & (df["num_speakers_in_mix"] <= num_speakers[1])]
     df = df[(df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1])]
-    df = df[(df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1])]
+    if has_white_noise:
+        df = df[(df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1])]
+    else:
+        df = df[df["white_noise_snr_low"] == None]
     df["model_name_type"] = df["model_type"] + ": " + df["model_name"]
 
     if eval_mode == "Multiple models":
