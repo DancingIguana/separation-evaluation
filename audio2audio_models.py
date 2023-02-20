@@ -6,6 +6,7 @@ import torch
 import psutil
 import os
 import json
+import gc
 
 class Audio2AudioModels:
     """
@@ -34,29 +35,30 @@ class Audio2AudioModels:
         """
         Function for most of the enhancers from Speechbrain.
         """
+        gc.collect() # Run the garbage collector just in case
         lengths = torch.tensor([1.])
         this_process = psutil.Process(os.getpid())
         st = time.time()
         estimate_source = enhancement_function(noisy_batch, lengths)
         et = time.time()
-        elapsed_time = et - st
+        #elapsed_time = et - st
         memory = this_process.memory_info().rss
-        return estimate_source, elapsed_time, memory
+        return estimate_source, st, et, memory
     
     def separator_template(self,mix_batch: torch.tensor, separator_function):
         """
         Function for the separators from Speechbrain.
         """
-
+        gc.collect() # Run the garbage collector just in case
         this_process = psutil.Process(os.getpid())
         st = time.time()
         estimate_sources = separator_function(mix=mix_batch)
         et = time.time()
-        elapsed_time = et - st
+        #elapsed_time = et - st
         memory = this_process.memory_info().rss
         # Transform shape of estimate_sources
         estimate_sources = torch.transpose(estimate_sources,1,2)[0]
-        return estimate_sources, elapsed_time, memory
+        return estimate_sources, st, et, memory
 
 
     def audio_model_function(self,noisy_batch: torch.tensor):

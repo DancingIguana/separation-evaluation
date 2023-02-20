@@ -73,7 +73,8 @@ def evaluate_model(
     mix_wav = []
     original_source = []
     mix_duration = []
-    time = []
+    start_time = []
+    end_time = []
     sdr = []
     sir = []
     sar = []
@@ -99,11 +100,9 @@ def evaluate_model(
 
         # Stack the sources in a tensor 
         sources_stacked_tensor = torch.stack(sources)
-        #print("Sources shape",sources_stacked_tensor.shape)
-        #print("Mix shape",mix.shape)
+
         # Do the separation using the function and get the overall performance
-        estimate_sources, time_, memory_ = model_separation_function(mix.unsqueeze(0))
-        #print("Estimate shape", estimate_sources.shape)
+        estimate_sources, start_time_, end_time_, memory_ = model_separation_function(mix.unsqueeze(0))
 
         #TODO: Evaluate the separation for a model that's separating a mix with more files
         # than it's intended ones
@@ -121,9 +120,8 @@ def evaluate_model(
             for subset in itertools.combinations(indexed_sources,n_estimations):
                 #Get the sources values as a numpy array
                 subset_indexed_sources = sorted(subset, key = lambda x:x[0])
-                #print(f"Subset indexes sources: {subset_indexed_sources}")
                 sources_array = np.array([source[1].numpy() for source in sorted(subset_indexed_sources)])
-                #print(f"Sources array: {sources_array}")
+                
                 sdr_, sir_, sar_, perm = mir_eval.separation.bss_eval_sources(
                     reference_sources=sources_array,
                     estimated_sources=estimate_sources.numpy(),
@@ -152,7 +150,8 @@ def evaluate_model(
                 else:
                     main_source.append(False)
                 memory.append(memory_)
-                time.append(time_)
+                start_time.append(start_time_)
+                end_time.append(end_time_)
                 sir.append(sir_array[j])
                 sar.append(sar_array[j])
                 sdr.append(sdr_array[j])
@@ -177,7 +176,8 @@ def evaluate_model(
             else:
                 main_source.append(False)
             memory.append(memory_)
-            time.append(time_)
+            start_time.append(start_time_)
+            end_time.append(end_time_)
             sir.append(sir_[j])
             sar.append(sar_[j])
             sdr.append(sdr_[j])
@@ -204,7 +204,8 @@ def evaluate_model(
             "white_noise_snr_high": [white_noise_snr_high for i in range(len(mix_wav))],
             "original_source": original_source,
             "main_source":main_source,
-            "separation_time": time,
+            "start_time": start_time,
+            "end_time":  end_time,
             "occupied_memory": memory,
             "SIR": sir,
             "SDR": sdr,
