@@ -80,7 +80,9 @@ model_comparison_layout = html.Div(children = [
                 step = 5,
                 value=[-5,15],
                 id="cur_mix_snr"
-            )
+            ),
+
+            daq.BooleanSwitch(id="snr_can_be_empty", on=True),
         ]),
         html.Div(children=[
             html.Label("White Noise SNR"),
@@ -91,7 +93,10 @@ model_comparison_layout = html.Div(children = [
                 value=[-5,15],
                 id="cur_wn_snr"
             ),
-            daq.BooleanSwitch(id="has_white_noise", on=True),
+            html.Label("No white noise"),
+            daq.BooleanSwitch(id="no-white-noise",on=True),
+            html.Label("White noise can be empty"),
+            daq.BooleanSwitch(id="wn_can_be_empty", on=True),
         ]),
         html.Br(),
         html.Label("Models to compare:"),
@@ -218,8 +223,10 @@ def update_graph_single_eval(df,model_type_name,variable,xaxis):
             df,
             x=variables[xaxis],
             y=variables[variable],
+            color="model_name_type",
             labels={
                 variables[variable]: variable,
+                variables[xaxis]: xaxis,
                 "model_name_type": "Models"
             },
             #template = "plotly_dark"
@@ -227,7 +234,8 @@ def update_graph_single_eval(df,model_type_name,variable,xaxis):
     fig.update_layout({
         "plot_bgcolor":"rgba(0,0,0,0)",
         "paper_bgcolor":"rgba(0,0,0,0)",
-        "font_color":"white"}
+        "font_color":"black",
+        "xaxis_tickformat":",d"}
     )
 
     fig.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor= "gray",zeroline=False)
@@ -241,7 +249,7 @@ def update_graph_single_eval(df,model_type_name,variable,xaxis):
 def update_comparison_dropdowns(eval_mode):
     if eval_mode == "Multiple models":
         return True, True, None
-    return False, False, None
+    return True, False, None
 
 @callback(
     [Output("main-graph","figure"), Output("summary-table","data")],
@@ -250,8 +258,10 @@ def update_comparison_dropdowns(eval_mode):
     Input("cur_dataset","value"),
     Input("cur_num_speakers","value"),
     Input("cur_mix_snr","value"),
+    Input("snr_can_be_empty","on"),
     Input("cur_wn_snr","value"),
-    Input("has_white_noise","value"),
+    Input("no-white-noise","on"),
+    Input("wn_can_be_empty","on"),
     Input("cur_model","value"),
     Input("cur_variable","value"),
     Input("cur_xaxis","value")]
@@ -261,8 +271,10 @@ def update_graph(
     data_file,
     num_speakers,
     mix_snr,
+    snr_can_be_empty,
     wn_snr,
-    has_white_noise,
+    no_white_noise,
+    wn_can_be_empty,
     model_type_name_list,
     variable,
     xaxis):
@@ -270,16 +282,30 @@ def update_graph(
     if not data_file: return empty_plot, pd.DataFrame().to_dict("records")
     df = pd.read_csv(str(os.path.join("app_datasets",data_file)))
     df = df[(df["num_speakers_in_mix"] >= num_speakers[0]) & (df["num_speakers_in_mix"] <= num_speakers[1])]
-    df = df[(df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1])]
-    if has_white_noise:
-        df = df[(df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1])]
+    
+    if snr_can_be_empty:
+        df = df[(
+            (df["mix_snr_low"].isnull()) | (df["mix_snr_high"].isnull())) | 
+            ((df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1]))]
+        print(df)
     else:
-        df = df[df["white_noise_snr_low"] == None]
+        df = df[(df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1])]
+    
+    print(len(df))
+    if no_white_noise:
+        df = df[(df["white_noise_snr_low"].isnull()) & (df["white_noise_snr_low"].isnull())]
+        print(df["white_noise_snr_low"])
+    else:
+        if wn_can_be_empty:
+            df = df[((df["white_noise_snr_low"].isnull()) | (df["white_noise_snr_high"].isnull())) | ((df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1]))]
+        else:
+            df = df[(df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1])]
     df["model_name_type"] = df["model_type"] + ": " + df["model_name"]
 
     if eval_mode == "Multiple models":
         df = df[df["model_name_type"].isin(model_type_name_list)]
         return update_graph_multi_eval(df,model_type_name_list,variable)
     if not xaxis: return empty_plot,pd.DataFrame().to_dict("records")
-    df = df[df["model_name_type"] == model_type_name_list]
+    #df = df[df["model_name_type"] == model_type_name_list]
+    df = df[df["model_name_type"].isin(model_type_name_list)]
     return update_graph_single_eval(df,model_type_name_list,variable,xaxis)
