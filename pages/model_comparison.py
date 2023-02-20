@@ -81,7 +81,7 @@ model_comparison_layout = html.Div(children = [
                 value=[-5,15],
                 id="cur_mix_snr"
             ),
-
+            html.Label("Mix SNR can be empty (1 speaker)"),
             daq.BooleanSwitch(id="snr_can_be_empty", on=True),
         ]),
         html.Div(children=[
@@ -93,8 +93,8 @@ model_comparison_layout = html.Div(children = [
                 value=[-5,15],
                 id="cur_wn_snr"
             ),
-            html.Label("No white noise"),
-            daq.BooleanSwitch(id="no-white-noise",on=True),
+            html.Label("White noise"),
+            daq.BooleanSwitch(id="white-noise",on=False),
             html.Label("White noise can be empty"),
             daq.BooleanSwitch(id="wn_can_be_empty", on=True),
         ]),
@@ -181,6 +181,7 @@ empty_plot.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor= "gray",zeroline
 empty_plot.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor= "gray",zeroline=False)
 
 def update_graph_multi_eval(df,model_type_name_list,variable):
+    
     if variable == "Main speaker":
         fig = px.histogram(
             df,
@@ -190,7 +191,8 @@ def update_graph_multi_eval(df,model_type_name_list,variable):
             labels={
                 "model_name_type": "Models",
                 variables[variable]: "Is estimation the main source?",
-            })
+            },
+            category_orders={"model_name_type":sorted(df["model_name_type"].unique())})
     else:
         fig = px.box(
             df,
@@ -200,13 +202,14 @@ def update_graph_multi_eval(df,model_type_name_list,variable):
                 variables[variable]: variable,
                 "model_name_type": "Models"
             },
+            category_orders={"model_name_type":sorted(df["model_name_type"].unique())}
             #template = "plotly_dark"
         )
 
     fig.update_layout({
         "plot_bgcolor":"rgba(0,0,0,0)",
         "paper_bgcolor":"rgba(0,0,0,0)",
-        "font_color":"white"}
+        "font_color":"black"}
     )
 
     fig.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor= "gray",zeroline=False)
@@ -229,6 +232,7 @@ def update_graph_single_eval(df,model_type_name,variable,xaxis):
                 variables[xaxis]: xaxis,
                 "model_name_type": "Models"
             },
+            category_orders={"model_name_type":sorted(df["model_name_type"].unique())}
             #template = "plotly_dark"
         )
     fig.update_layout({
@@ -260,7 +264,7 @@ def update_comparison_dropdowns(eval_mode):
     Input("cur_mix_snr","value"),
     Input("snr_can_be_empty","on"),
     Input("cur_wn_snr","value"),
-    Input("no-white-noise","on"),
+    Input("white-noise","on"),
     Input("wn_can_be_empty","on"),
     Input("cur_model","value"),
     Input("cur_variable","value"),
@@ -273,7 +277,7 @@ def update_graph(
     mix_snr,
     snr_can_be_empty,
     wn_snr,
-    no_white_noise,
+    white_noise,
     wn_can_be_empty,
     model_type_name_list,
     variable,
@@ -283,22 +287,22 @@ def update_graph(
     df = pd.read_csv(str(os.path.join("app_datasets",data_file)))
     df = df[(df["num_speakers_in_mix"] >= num_speakers[0]) & (df["num_speakers_in_mix"] <= num_speakers[1])]
     
-    if snr_can_be_empty:
+    if snr_can_be_empty: # Consider datasets of 1 or more speakers
         df = df[(
             (df["mix_snr_low"].isnull()) | (df["mix_snr_high"].isnull())) | 
             ((df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1]))]
         print(df)
-    else:
+    else: # Only consider datasets of 2 or more speakers
         df = df[(df["mix_snr_low"] >= mix_snr[0]) & (df["mix_snr_high"] <= mix_snr[1])]
     
     print(len(df))
-    if no_white_noise:
+    if not white_noise: # Consider datasets that DO NOT have white noise
         df = df[(df["white_noise_snr_low"].isnull()) & (df["white_noise_snr_low"].isnull())]
         print(df["white_noise_snr_low"])
     else:
-        if wn_can_be_empty:
+        if wn_can_be_empty: # Consider datasets that can have or not white noise
             df = df[((df["white_noise_snr_low"].isnull()) | (df["white_noise_snr_high"].isnull())) | ((df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1]))]
-        else:
+        else: # Consider only dayasets that white noise
             df = df[(df["white_noise_snr_low"] >= wn_snr[0]) & (df["white_noise_snr_high"] <= wn_snr[1])]
     df["model_name_type"] = df["model_type"] + ": " + df["model_name"]
 
